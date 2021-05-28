@@ -102,7 +102,6 @@ set wrap
 set foldmethod=syntax
 set updatetime=500
 set smartcase
-set number
 syntax on
 
 highlight   CursorColumn  term=NONE    cterm=none ctermbg=232
