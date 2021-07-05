@@ -113,11 +113,13 @@ setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording en
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 
 export PATH="$PATH:$HOME/.local/bin"
+export LESS='-R -j5'
 
 # Install Ruby Gems to ~/.gems
 export GEM_HOME="$HOME/.gems"
 export GEM_PATH="$HOME/.gems"
 export PATH="$PATH:$HOME/.gems/bin"
+
 
 # Functions
 def() { w3m "https://www.vocabulary.com/dictionary/$1" | tail -n +13 | less }

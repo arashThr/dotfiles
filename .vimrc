@@ -58,7 +58,7 @@ Plugin 'tpope/vim-commentary'
 call vundle#end()            " required
 filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
-"filetype plugin on
+filetype plugin on
 "
 " Brief help
 " :PluginList       - lists configured plugins
@@ -96,13 +96,16 @@ set t_Co=256
 set tags=./tags,./vstags,tags;/
 set virtualedit=block
 set wrap
-"set nu
 "set spell spelllang=en_us
-"set colorcolumn=80
 set foldmethod=syntax
+" Disable auto folding
+set nofoldenable
 set updatetime=500
 set smartcase
+set autowrite
 syntax on
+
+colorscheme desert
 
 highlight   CursorColumn  term=NONE    cterm=none ctermbg=232
 highlight   CursorLine    term=NONE    cterm=bold ctermbg=8
@@ -157,9 +160,9 @@ inoremap <Down> <C-o>gj
 inoremap <Up> <C-o>gk
 
 map <F5> :NERDTreeToggle<CR>
-"au filetype perl :NERDTreeFind | wincmd p
+" au filetype perl :NERDTreeFind | wincmd p
 nmap <F8> :TagbarToggle<CR>
-"au filetype perl :TagbarToggle
+" au filetype perl :TagbarToggle
 
 map <Leader>e :NERDTreeFind<CR>
 map <Leader>b :CtrlPBuffer<CR>
@@ -170,18 +173,25 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-let g:syntastic_mode_map={'mode': 'passive'}
+" Code
+let g:syntastic_mode_map={'mode': 'active'}
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_enable_perl_checker = 1
 let g:syntastic_perl_checkers = ['perl']
+let g:syntastic_cpp_compiler_options = '-std=c++17'
 
+" Perl
 au filetype perl :iabbrev pdef use v5.26;<CR>use warnings;<CR><CR>use Data::Dumper;<CR>use Data::Printer;<CR>
-au filetype perl :iabbrev pfuture use Future;<CR>use Future::AsyncAwait;<CR>
-au filetype perl :iabbrev ploop use IO::Async::Loop;<CR><CR>my $loop = IO::Async::Loop->new;<CR>
+au filetype perl :iabbrev pfuture use Future;<CR>use Future::AsyncAwait;<CR>use IO::Async::Loop;<CR><CR>my $loop = IO::Async::Loop->new;<CR>
 au filetype perl :iabbrev plog require Log::Any::Adapter;<CR>Log::Any::Adapter->import(qw(Stderr), log_level => 'info');
 au filetype perl :iabbrev pdump use Data::Dumper::Concise;<CR>use Data::Printer;<CR>
 au filetype perl :iabbrev pp print STDERR
+
+" My machine specfic configs goes here
+if filereadable(".vim.custom.vim")
+    so .vim.custom.vim
+endif
 
