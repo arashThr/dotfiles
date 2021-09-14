@@ -1,0 +1,27 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Arash Taher
+	email = arashThr@outlook.com
+[core]
+	excludesfile = ~/.gitignore_global
+	editor = vim
+	pager = less -r
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = false
+[merge]
+	tool = vimdiff
+	ff = only
+[init]
+	defaultBranch = main
+[pull]
+	ff = only
+[rerere]
+	enabled = true
+[color]
+	ui = true
+	status = true
+	diff = true
+#[commit]
+#	template = /Users/arash/.stCommitMsg

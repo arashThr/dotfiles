@@ -102,7 +102,7 @@ set foldmethod=syntax
 set nofoldenable
 set updatetime=500
 set smartcase
-set autowrite
+set autowriteall
 syntax on
 
 colorscheme desert
@@ -144,6 +144,7 @@ map <Leader>] :wa<bar><UP><CR>
 
 nmap <F1> <Esc>
 imap <F1> <Esc>
+set pastetoggle=<F2>
 
 autocmd FileType gitcommit autocmd! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
 
@@ -174,7 +175,7 @@ set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
 " Code
-let g:syntastic_mode_map={'mode': 'active'}
+let g:syntastic_mode_map={'mode': 'passive'}
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
@@ -191,7 +192,7 @@ au filetype perl :iabbrev pdump use Data::Dumper::Concise;<CR>use Data::Printer;
 au filetype perl :iabbrev pp print STDERR
 
 " My machine specfic configs goes here
-if filereadable(".vim.custom.vim")
-    so .vim.custom.vim
-endif
+" if filereadable(".vim.custom.vim")
+"     so .vim.custom.vim
+" endif
 
