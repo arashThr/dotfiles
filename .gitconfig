@@ -12,7 +12,6 @@
 	prompt = false
 [merge]
 	tool = vimdiff
-	ff = only
 [init]
 	defaultBranch = main
 [pull]
