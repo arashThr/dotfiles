@@ -24,7 +24,7 @@ git config --global color.status true
 git config --global color.diff true
 git config --global core.pager "less -r"
 git config --global core.editor "vim"
-git config --global merge.ff "only"
+git config --global core.excludesfile "$HOME/.gitignore"
 
 curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
 cat > $HOME/.gitignore << 'GIT'
@@ -33,7 +33,6 @@ vstags
 *.swp
 .build/
 GIT
-git config --global core.excludesfile '~/.gitignore'
 
 # Add new apps to ~/apps
 local_bin="$HOME/Documents/apps"
