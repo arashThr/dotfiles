@@ -14,17 +14,12 @@ Plugin 'gmarik/Vundle.vim'
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
 Plugin 'tpope/vim-fugitive'
-" plugin from http://vim-scripts.org/vim/scripts.html
-Plugin 'L9'
-" The sparkup vim script is in a subdirectory of this repo called vim.
-" Pass the path to set the runtimepath properly.
-Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 " plugin for perl syntax, template toolkit
 Plugin 'vim-perl/vim-perl'
 " plugin for javascript syntax
-Plugin 'pangloss/vim-javascript'
+" Plugin 'pangloss/vim-javascript'
 " plugin for json syntax
-Plugin 'elzr/vim-json'
+" Plugin 'elzr/vim-json'
 " plugin to easy find file
 Plugin 'kien/ctrlp.vim'
 " tree explorer
@@ -32,18 +27,21 @@ Plugin 'scrooloose/nerdtree'
 " Status line
 Plugin 'vim-airline/vim-airline'
 " HTML Syntax
-Plugin 'othree/html5.vim'
-" Mojo html.ep
-Plugin 'yko/mojo.vim'
+" Plugin 'othree/html5.vim'
 " Markdown highlighter
-Plugin 'plasticboy/vim-markdown'
+" Plugin 'plasticboy/vim-markdown'
+
 " Code tags
 Plugin 'majutsushi/tagbar'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plugin 'junegunn/fzf.vim'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'chaoren/vim-wordmotion'
+
+" fzf
+Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plugin 'junegunn/fzf.vim'
+command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
+
 " Comment stuff out. Use gcc
 Plugin 'tpope/vim-commentary'
  let g:ctrlp_map = '<C-p>'
@@ -73,7 +71,6 @@ set autoindent
 set backspace=indent,eol,start
 set cindent " set smartindent
 set cmdheight=2
-" set cursorline
 set errorformat=\"../../%f\"\\,%*[^0-9]%l:\ %m
 set expandtab
 set hidden
@@ -91,12 +88,10 @@ set shiftwidth=4
 set showcmd
 set showmatch
 set smarttab
-"set statusline=%F%m%r%h%w\ [%{&ff}]\ %y\ [CHR=%b/0x%B]\ [POS=%04l,%03c(%03v)]\ [%p%%]\ [LEN=%L]\ %{fugitive#statusline()}
 set t_Co=256
 set tags=./tags,./vstags,tags;/
 set virtualedit=block
 set wrap
-"set spell spelllang=en_us
 set foldmethod=syntax
 " Disable auto folding
 set nofoldenable
@@ -127,6 +122,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 nnoremap <C-L> :noh<CR><C-L>
 inoremap jj <Esc>
 nnoremap <Leader>r :source ~/.vimrc<CR>
+nnoremap <Leader>d :put =strftime('%a %d %b %Y')<CR>
 nnoremap <Leader><Leader>r :e ~/.vimrc<CR>
 
 map <Leader>gs :Gstatus<CR>
@@ -140,10 +136,6 @@ map <Leader>gdm :Git diff %<CR>
 map <Leader>gdf :Gdiff<CR>
 map <Leader>gg :Git
 
-map <Leader>] :wa<bar><UP><CR>
-
-nmap <F1> <Esc>
-imap <F1> <Esc>
 set pastetoggle=<F2>
 
 autocmd FileType gitcommit autocmd! BufEnter COMMIT_EDITMSG call setpos('.', [0, 1, 1, 0])
@@ -170,6 +162,9 @@ map <Leader>b :CtrlPBuffer<CR>
 map <Leader>t :CtrlPBufTag<CR>
 map <Leader>p :Files<CR>
 
+" Ignore node_modules in CtrlP
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
+
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
@@ -182,17 +177,26 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_enable_perl_checker = 1
 let g:syntastic_perl_checkers = ['perl']
-let g:syntastic_cpp_compiler_options = '-std=c++17'
+" let g:syntastic_cpp_compiler_options = '-std=c++17'
 
 " Perl
-au filetype perl :iabbrev pdef use v5.26;<CR>use warnings;<CR><CR>use Data::Dumper;<CR>use Data::Printer;<CR>
+au filetype perl :iabbrev pdef use v5.26;<CR>use warnings;<CR><CR>use Data::Dumper::Concise;<CR>use Data::Printer;<CR>use Syntax::Keyword::Try;<CR>
 au filetype perl :iabbrev pfuture use Future;<CR>use Future::AsyncAwait;<CR>use IO::Async::Loop;<CR><CR>my $loop = IO::Async::Loop->new;<CR>
 au filetype perl :iabbrev plog require Log::Any::Adapter;<CR>Log::Any::Adapter->import(qw(Stderr), log_level => 'info');
 au filetype perl :iabbrev pdump use Data::Dumper::Concise;<CR>use Data::Printer;<CR>
+au filetype perl :iabbrev pdb use Database::Async;<CR>use Database::Async::Engine::PostgreSQL;<CR>my $db = Database::Async->new(type => 'postgresql', engine => {service => 'feeddb'});<CR>
 au filetype perl :iabbrev pp print STDERR
 
+" JS/TS
+au filetype javascript :iabbrev cl console.log()<LEFT>
+au filetype typescript :iabbrev cl console.log()<LEFT>
+
+" JSONC - JSON standard does not have comments
+autocmd FileType json syntax match Comment +\/\/.\+$+
+autocmd FileType json syntax match Comment +\/\*.\+$+
+
 " My machine specfic configs goes here
-" if filereadable(".vim.custom.vim")
-"     so .vim.custom.vim
-" endif
+if filereadable(".local.vim")
+    source .local.vim
+endif
 
