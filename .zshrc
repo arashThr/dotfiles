@@ -118,6 +118,7 @@ export ZSH="$HOME/.oh-my-zsh"
 export LESS='-R -j5'
 source $ZSH/oh-my-zsh.sh
 autoload -U compinit && compinit
+autoload -U +X bashcompinit && bashcompinit
 
 # Install Ruby Gems to ~/.gems
 export GEM_HOME="$HOME/.gems"
@@ -159,5 +160,9 @@ convert_pics () {
 local_rc_file=$HOME/.localrc.sh
 if [ -f $local_rc_file ]; then
     source $local_rc_file
+fi
+
+if [[ $TERM == "dumb" ]]; then
+    export PS1="$ "
 fi
 
