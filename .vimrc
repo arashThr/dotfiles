@@ -3,12 +3,18 @@ filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
+
+" My machine specfic configs goes here
+if filereadable("~/.local.vim")
+    source .local.vim
+endif
 call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
+Plugin 'ycm-core/YouCompleteMe'
 
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
@@ -163,7 +169,7 @@ map <Leader>t :CtrlPBufTag<CR>
 map <Leader>p :Files<CR>
 
 " Ignore node_modules in CtrlP
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store'
 
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -182,7 +188,7 @@ let g:syntastic_perl_checkers = ['perl']
 " Perl
 au filetype perl :iabbrev pdef use v5.26;<CR>use warnings;<CR><CR>use Data::Dumper::Concise;<CR>use Data::Printer;<CR>use Syntax::Keyword::Try;<CR>
 au filetype perl :iabbrev pfuture use Future;<CR>use Future::AsyncAwait;<CR>use IO::Async::Loop;<CR><CR>my $loop = IO::Async::Loop->new;<CR>
-au filetype perl :iabbrev plog require Log::Any::Adapter;<CR>Log::Any::Adapter->import(qw(Stderr), log_level => 'info');
+au filetype perl :iabbrev plog use Log::Any qw($log);<CR>require Log::Any::Adapter;<CR>Log::Any::Adapter->import(qw(Stderr), log_level => 'info');
 au filetype perl :iabbrev pdump use Data::Dumper::Concise;<CR>use Data::Printer;<CR>
 au filetype perl :iabbrev pdb use Database::Async;<CR>use Database::Async::Engine::PostgreSQL;<CR>my $db = Database::Async->new(type => 'postgresql', engine => {service => 'feeddb'});<CR>
 au filetype perl :iabbrev pp print STDERR
@@ -194,9 +200,4 @@ au filetype typescript :iabbrev cl console.log()<LEFT>
 " JSONC - JSON standard does not have comments
 autocmd FileType json syntax match Comment +\/\/.\+$+
 autocmd FileType json syntax match Comment +\/\*.\+$+
-
-" My machine specfic configs goes here
-if filereadable(".local.vim")
-    source .local.vim
-endif
 

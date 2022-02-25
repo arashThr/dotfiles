@@ -1,6 +1,11 @@
 #!/bin/sh
 set -eu
 
-ln -s `pwd`/.vimrc ~/.vimrc
-ln -s `pwd`/.zshrc ~/.zshrc
+for rc_file in .vimrc .zshrc .replyrc; do
+    if [ -f $rc_file ]; then
+        echo "$rc_file already exists"
+    else
+        ln -s `pwd`/$rc_file ~/$rc_file
+    fi
+done
 

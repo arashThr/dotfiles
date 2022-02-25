@@ -1,9 +1,10 @@
-script_line1 = use strict
-script_line2 = use warnings
+#script_line1 = use 5.20.0
+script_line2 = use strict
+script_line3 = use warnings
 
 [Interrupt]
 [FancyPrompt]
-[DataDumper]
+[DataPrinter]
 [Colors]
 [ReadLine]
 [Hints]
