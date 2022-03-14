@@ -1,11 +1,13 @@
 #!/bin/sh
 set -eu
 
-for rc_file in .vimrc .zshrc .replyrc; do
-    if [ -f $rc_file ]; then
-        echo "$rc_file already exists"
+for rc_file in .vimrc .zshrc .replyrc .psqlrc; do
+    file=$HOME/$rc_file
+    if [ -f $file ]; then
+        echo "$file already exists"
     else
-        ln -s `pwd`/$rc_file ~/$rc_file
+        echo "Linking $file"
+        ln -s `pwd`/$rc_file $file
     fi
 done
 

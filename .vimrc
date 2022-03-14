@@ -4,10 +4,6 @@ filetype off                  " required
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 
-" My machine specfic configs goes here
-if filereadable("~/.local.vim")
-    source .local.vim
-endif
 call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
@@ -15,6 +11,7 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
 Plugin 'ycm-core/YouCompleteMe'
+Plugin 'vimwiki/vimwiki'
 
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
