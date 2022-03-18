@@ -1,0 +1,14 @@
+Include config.d/*
+
+Host github-arash
+  HostName github.com
+  AddKeysToAgent yes
+  IdentitiesOnly yes
+  IdentityFile ~/.ssh/arash_id_rsa
+
+Host *
+  ControlMaster auto
+  ControlPath ~/.ssh/ssh-%r@%h:%p
+  AddKeysToAgent yes
+  UseKeychain yes
+
