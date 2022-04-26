@@ -10,7 +10,12 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
-Plugin 'ycm-core/YouCompleteMe'
+
+" Code completion
+" Plugin 'ycm-core/YouCompleteMe'
+" Plugin 'dense-analysis/ale'
+Plugin 'neoclide/coc.nvim'
+
 Plugin 'vimwiki/vimwiki'
 
 " The following are examples of different formats supported.
@@ -198,3 +203,5 @@ au filetype typescript :iabbrev cl console.log()<LEFT>
 autocmd FileType json syntax match Comment +\/\/.\+$+
 autocmd FileType json syntax match Comment +\/\*.\+$+
 
+" let g:ale_completion_enabled = 1
+" set omnifunc=ale#completion#OmniFunc
