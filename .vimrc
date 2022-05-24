@@ -14,9 +14,9 @@ Plugin 'gmarik/Vundle.vim'
 " Code completion
 " Plugin 'ycm-core/YouCompleteMe'
 " Plugin 'dense-analysis/ale'
-Plugin 'neoclide/coc.nvim'
+" Plugin 'neoclide/coc.nvim'
 
-Plugin 'vimwiki/vimwiki'
+" Plugin 'vimwiki/vimwiki'
 
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
@@ -52,16 +52,10 @@ command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'opti
 
 " Comment stuff out. Use gcc
 Plugin 'tpope/vim-commentary'
- let g:ctrlp_map = '<C-p>'
- let g:ctrlp_working_path_mode = 0 " don’t manage working directory.
- let g:ctrlp_use_caching = 1
- let g:ctrlp_custom_ignore = {
- \ 'dir':  '\v\c\.(git|svn)$|cgi/t/sandbox|cover_db',
- \ 'file': '\v\c\.(swf|bak|png|gif|js|mov|ico|jpg|pdf|jrxml)$'
-  \ }
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
+
 filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
 filetype plugin on
@@ -74,6 +68,13 @@ filetype plugin on
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
+
+let g:ctrlp_map = '<C-p>'
+let g:ctrlp_working_path_mode = 0 " don’t manage working directory.
+let g:ctrlp_use_caching = 1
+let g:ctrlp_custom_ignore = {
+\ 'dir':  'node_modules'
+ \ }
 
 set autoindent
 set backspace=indent,eol,start
@@ -169,9 +170,6 @@ map <Leader>e :NERDTreeFind<CR>
 map <Leader>b :CtrlPBuffer<CR>
 map <Leader>t :CtrlPBufTag<CR>
 map <Leader>p :Files<CR>
-
-" Ignore node_modules in CtrlP
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store'
 
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
