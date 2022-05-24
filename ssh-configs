@@ -1,3 +1,5 @@
+# NOTE: DO NOT put sensitive information here
+
 Include config.d/*
 
 Host github-arash
