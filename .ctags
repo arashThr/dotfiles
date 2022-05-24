@@ -1,0 +1,4 @@
+--regex-Perl=/^async method ([a-zA-Z0-9_]+)/\1/s,subroutine/
+--regex-Perl=/^async sub ([a-zA-Z0-9_]+)/\1/s,subroutine/
+--regex-Perl=/^method ([a-zA-Z0-9_]+)/\1/s,subroutine/
+
