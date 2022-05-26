@@ -1,7 +1,10 @@
 #!/bin/bash
+set -eu
 
 # Install packages
-sudo apt-get -y install silversearcher-ag zsh exuberant-ctags man-db emacs-nox manpages-posix manpages-posix-dev tmux cpanminus
+sudo apt -y install build-essential autoconf automake pkg-config
+sudo apt -y silversearcher-ag zsh emacs-nox tmux # Editors
+sudo apt -y install man-db manpages-posix manpages-posix-dev # Man pages
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 sudo chsh -s /usr/bin/zsh nobody
@@ -12,28 +15,17 @@ mkdir -p $workspace_path/github
 git clone git@github.com:arashThr/dotfiles.git $workspace_path/github/dotfiles
 setup_configs=$workspace_path/github/dotfiles/setup.sh
 chmod +x $setup_configs
-./$setup_configs
+sh $setup_configs
 
 # Config Git
 curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
 
-# Install Vim plugins
-vim -c 'PluginInstall' -c 'qa!'
-nvim -c 'PackerInstall' -c 'qa!'
-
 # Ctags
-# sudo apt-get -y install exuberant-ctags
-# sudo snap install universal-ctags
-git clone https://github.com/universal-ctags/ctags.git
-cd ctags
-./autogen.sh
-./configure # defaults to /usr/local
-make
-make install # may require extra privileges depending on where to install
-rm -rf ctags
+sudo snap install universal-ctags
 
 # CPAN modules
-cpanm -n Proc::InvokeEditor Reply::Plugin::Editor Perl::LanguageServer Term::ReadLine::Gnu
+# cpanm -n Proc::InvokeEditor Reply::Plugin::Editor Perl::LanguageServer Term::ReadLine::Gnu
+# cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
 
 # Add new apps to ~/apps
 local_bin="$HOME/apps"
@@ -57,14 +49,19 @@ tar -xzf ~/gh_1.tar.gz -C ~
 cp ~/gh_1.10.3_linux_386/bin/gh $local_bin
 rm -Rf ~/gh_1*
 
+# NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+omz reload
+nvm install --lts
+
 # nvim
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
 tar -xzf nvim-linux64.tar.gz -C $local_bin
 ln -s $local_bin/nvim-linux64/bin/nvim $local_bin
+nvim -c 'PackerInstall' -c 'qa!'
 
-# NVM
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-nvm install --lts
+# Install Vim plugins
+vim -c 'PluginInstall' -c 'qa!'
 
 alias fixssh='eval $(tmux showenv -s SSH_AUTH_SOCK)'
 
