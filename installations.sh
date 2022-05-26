@@ -2,9 +2,9 @@
 set -eu
 
 # Install packages
-sudo apt -y install build-essential autoconf automake pkg-config
-sudo apt -y silversearcher-ag zsh emacs-nox tmux # Editors
-sudo apt -y install man-db manpages-posix manpages-posix-dev # Man pages
+sudo apt install -y build-essential autoconf automake pkg-config
+sudo apt install -y silversearcher-ag zsh emacs-nox tmux # Editors
+sudo apt install -y man-db manpages-posix manpages-posix-dev # Man pages
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 sudo chsh -s /usr/bin/zsh nobody
@@ -22,10 +22,6 @@ curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contri
 
 # Ctags
 sudo snap install universal-ctags
-
-# CPAN modules
-# cpanm -n Proc::InvokeEditor Reply::Plugin::Editor Perl::LanguageServer Term::ReadLine::Gnu
-# cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
 
 # Add new apps to ~/apps
 local_bin="$HOME/apps"
@@ -65,3 +61,7 @@ vim -c 'PluginInstall' -c 'qa!'
 
 alias fixssh='eval $(tmux showenv -s SSH_AUTH_SOCK)'
 
+
+# CPAN modules
+# cpanm -n Proc::InvokeEditor Reply::Plugin::Editor Perl::LanguageServer Term::ReadLine::Gnu
+# cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
