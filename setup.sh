@@ -7,7 +7,7 @@ if ! type zsh &> /dev/null; then
     exit 1
 fi
 
-for rc_file in vimrc zshrc replyrc psqlrc gitconfig; do
+for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global; do
     file=$HOME/.$rc_file
     [[ -L $file ]] && rm $file
     echo "Linking $file to `pwd`/$rc_file"
