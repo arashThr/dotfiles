@@ -7,14 +7,26 @@ if ! type zsh &> /dev/null; then
     exit 1
 fi
 
+# RC files
+link_file() {
+    from=$1
+    to=$2
+    [[ -e $to ]] && rm $to
+    echo "Linking $from to $to"
+    ln -s $from $to
+}
+
 for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global; do
-    file=$HOME/.$rc_file
-    [[ -L $file ]] && rm $file
-    echo "Linking $file to `pwd`/$rc_file"
-    ln -s `pwd`/$rc_file $file
+    link_file `pwd`/$rc_file $HOME/.$rc_file
 done
 
-# Install my theme
+# NVim configs
+nvim_path=$HOME/.config/nvim
+mkdir -p $nvim_path/lua/
+link_file `pwd`/nvim/init.vim $nvim_path/init.vim
+link_file `pwd`/nvim/plugins.lua $nvim_path/lua/plugins.lua
+
+# Install my ZSH theme
 theme_dir=$HOME/.oh-my-zsh/custom/themes
 theme_file=$theme_dir/arash.zsh-theme
 
