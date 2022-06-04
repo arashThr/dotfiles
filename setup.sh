@@ -1,3 +1,6 @@
+# This script creates the RC files and sets up all the requirments for apps to
+# start working properly
+
 #!/bin/sh
 set -eu
 
@@ -20,11 +23,20 @@ for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global tmux.
     link_file `pwd`/$rc_file $HOME/.$rc_file
 done
 
-# NVim configs
+# Neovim configs
 nvim_path=$HOME/.config/nvim
 mkdir -p $nvim_path/lua/
-link_file `pwd`/nvim/init.vim $nvim_path/init.vim
-link_file `pwd`/nvim/plugins.lua $nvim_path/lua/plugins.lua
+link_file `pwd`/neovim/init.vim $nvim_path/init.vim
+link_file `pwd`/neovim/plugins.lua $nvim_path/lua/plugins.lua
+
+# Install plugins
+git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+     ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+nvim -c 'PackerInstall' -c 'qa!'
+
+# Install VIM plugins
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+vim -c 'PluginInstall' -c 'qa!'
 
 # Install my ZSH theme
 theme_dir=$HOME/.oh-my-zsh/custom/themes

@@ -3,19 +3,16 @@ set -eu
 
 # Install packages
 sudo apt install -y build-essential autoconf automake pkg-config
-sudo apt install -y silversearcher-ag zsh emacs-nox tmux # Editors
-sudo apt install -y man-db manpages-posix manpages-posix-dev # Man pages
+# Editors
+sudo apt install -y silversearcher-ag zsh emacs-nox tmux
+# Man pages
+sudo apt install -y man-db manpages-posix manpages-posix-dev
+
+# Install ZSH
+rm -rf $HOME/.oh-my-zsh/
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 sudo chsh -s /usr/bin/zsh nobody
-
-# Setup configs
-workspace_path=$HOME/Documents/workspace
-mkdir -p $workspace_path/github
-git clone git@github.com:arashThr/dotfiles.git $workspace_path/github/dotfiles
-setup_configs=$workspace_path/github/dotfiles/setup.sh
-chmod +x $setup_configs
-sh $setup_configs
 
 # Config Git
 curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
@@ -23,9 +20,9 @@ curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contri
 # Ctags
 sudo snap install universal-ctags
 
-# Add new apps to ~/apps
+# Install apps in ~/apps directory. This is included in .zshrc
 local_bin="$HOME/apps"
-mkdir $local_bin
+mkdir -p $local_bin
 export PATH=$PATH:$local_bin
 
 # fzf
@@ -54,14 +51,10 @@ nvm install --lts
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
 tar -xzf nvim-linux64.tar.gz -C $local_bin
 ln -s $local_bin/nvim-linux64/bin/nvim $local_bin
-nvim -c 'PackerInstall' -c 'qa!'
-
-# Install Vim plugins
-vim -c 'PluginInstall' -c 'qa!'
-
-alias fixssh='eval $(tmux showenv -s SSH_AUTH_SOCK)'
-
 
 # CPAN modules
 # cpanm -n Proc::InvokeEditor Reply::Plugin::Editor Perl::LanguageServer Term::ReadLine::Gnu
 # cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
+
+# DONE
+# NOW YOU CAN RUN SETUP SCRIPT

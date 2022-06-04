@@ -161,3 +161,6 @@ if [[ $TERM == "dumb" ]]; then
     export PS1="$ "
 fi
 
+local_bin="$HOME/apps"
+export PATH=$PATH:$local_bin
+
