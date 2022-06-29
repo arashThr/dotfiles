@@ -23,9 +23,19 @@ for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global tmux.
     link_file `pwd`/$rc_file $HOME/.$rc_file
 done
 
+# Install my ZSH theme
+theme_dir=$HOME/.oh-my-zsh/custom/themes
+theme_file=$theme_dir/arash.zsh-theme
+
+if [ -f $theme_dir ]; then
+    echo '.oh-my-zsh directory does not exist. Skipping theme.'
+else
+    [[ -L $theme_file && -e $theme_file ]] || ln -s `pwd`/arash.zsh-theme $theme_file
+fi
+
 # Neovim configs
 nvim_path=$HOME/.config/nvim
-mkdir -p $nvim_path/lua/
+[[ -d $nvim_path ]] || mkdir -p $nvim_path/lua/
 link_file `pwd`/neovim/init.vim $nvim_path/init.vim
 link_file `pwd`/neovim/plugins.lua $nvim_path/lua/plugins.lua
 
@@ -37,16 +47,6 @@ nvim -c 'PackerInstall' -c 'qa!'
 # Install VIM plugins
 git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 vim -c 'PluginInstall' -c 'qa!'
-
-# Install my ZSH theme
-theme_dir=$HOME/.oh-my-zsh/custom/themes
-theme_file=$theme_dir/arash.zsh-theme
-
-if [ -f $theme_dir ]; then
-    echo '.oh-my-zsh directory does not exist. Skipping theme.'
-else
-    [[ -L $theme_file && -e $theme_file ]] || ln -s `pwd`/arash.zsh-theme $theme_file
-fi
 
 # Create config.d directory for SSH config files
 ssh_dir=$HOME/.ssh

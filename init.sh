@@ -34,10 +34,10 @@ vstags
 .build/
 GIT
 
-# Add new apps to ~/apps
+# Add new apps to ~/Documents/apps
 local_bin="$HOME/Documents/apps"
-mkdir -p $local_bin
-export PATH=$PATH:/home/git/regentmarkets/environment-manifests-qa/bin:$local_bin
+mkdir -p $local_bin/bin
+export PATH=$PATH:$local_bin/bin
 
 # fzf
 wget https://github.com/junegunn/fzf/releases/download/0.24.3/fzf-0.24.3-linux_amd64.tar.gz -O ~/fzf.tar.gz

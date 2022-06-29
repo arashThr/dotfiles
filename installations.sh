@@ -21,9 +21,9 @@ curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contri
 sudo snap install universal-ctags
 
 # Install apps in ~/apps directory. This is included in .zshrc
-local_bin="$HOME/apps"
+local_bin="$HOME/Documents/apps"
 mkdir -p $local_bin
-export PATH=$PATH:$local_bin
+export PATH=$PATH:$local_bin/bin
 
 # fzf
 wget https://github.com/junegunn/fzf/releases/latest/download/fzf-0.30.0-linux_amd64.tar.gz -O ~/fzf.tar.gz

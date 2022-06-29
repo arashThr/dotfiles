@@ -23,13 +23,13 @@ Plugin 'gmarik/Vundle.vim'
 " plugin on GitHub repo
 Plugin 'tpope/vim-fugitive'
 " plugin for perl syntax, template toolkit
-Plugin 'vim-perl/vim-perl'
+" Plugin 'vim-perl/vim-perl'
 " plugin for javascript syntax
 " Plugin 'pangloss/vim-javascript'
 " plugin for json syntax
 " Plugin 'elzr/vim-json'
 " plugin to easy find file
-Plugin 'kien/ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 " tree explorer
 Plugin 'scrooloose/nerdtree'
 " Status line
