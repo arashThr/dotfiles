@@ -6,9 +6,9 @@ Host github-arash
   HostName github.com
   AddKeysToAgent yes
   IdentitiesOnly yes
-  IdentityFile ~/.ssh/arash_id_rsa
+  IdentityFile ~/.ssh/arash_rsa
 
-Host *
+Host klarna
   ControlMaster auto
   ControlPath ~/.ssh/ssh-%r@%h:%p
   AddKeysToAgent yes
