@@ -162,5 +162,5 @@ if [[ $TERM == "dumb" ]]; then
 fi
 
 local_bin="$HOME/Documents/apps/bin"
-export PATH=$PATH:$local_bin
+export PATH=$local_bin:$PATH
 
