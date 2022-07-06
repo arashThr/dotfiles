@@ -3,12 +3,12 @@ require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
   use 'neovim/nvim-lspconfig' -- Collection of configurations for the built-in LSP client
   use 'junegunn/fzf'
+  use 'junegunn/fzf.vim'
   use 'preservim/tagbar'
-  use 'ctrlpvim/ctrlp.vim'
   use 'airblade/vim-gitgutter'
   use 'tpope/vim-commentary'
+  use 'preservim/nerdtree'
 end)
-
 
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
