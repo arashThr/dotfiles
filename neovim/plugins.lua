@@ -6,6 +6,7 @@ require('packer').startup(function()
   use 'junegunn/fzf.vim'
   use 'preservim/tagbar'
   use 'airblade/vim-gitgutter'
+  use 'tpope/vim-fugitive'
   use 'tpope/vim-commentary'
   use 'preservim/nerdtree'
 end)
