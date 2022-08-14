@@ -7,6 +7,8 @@ sudo apt install -y build-essential autoconf automake pkg-config
 sudo apt install -y silversearcher-ag zsh emacs-nox tmux
 # Man pages
 sudo apt install -y man-db manpages-posix manpages-posix-dev
+# Programs
+sudo apt install -y jq
 
 # Install ZSH
 rm -rf $HOME/.oh-my-zsh/

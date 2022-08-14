@@ -23,3 +23,11 @@ map <Leader>b :Buffers<CR>
 map <Leader>t :BTag<CR>
 map <Leader>p :GFiles<CR>
 
+set spelllang=en
+set spellsuggest=best,9
+
+" Ag: Only looks at content, not file names
+command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
+
+" Auto save
+set autowriteall

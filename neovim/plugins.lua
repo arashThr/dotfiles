@@ -9,6 +9,7 @@ require('packer').startup(function()
   use 'tpope/vim-fugitive'
   use 'tpope/vim-commentary'
   use 'preservim/nerdtree'
+  use 'vimwiki/vimwiki'
 end)
 
 -- Mappings.
