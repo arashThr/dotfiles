@@ -2,6 +2,9 @@
 [user]
 	name = Arash Taher
 	email = arashThr@outlook.com
+# Work specific git configs
+[includeIf "gitdir:~/Documents/workspace/work/"]
+	path = ~/Documents/workspace/work/gitconfig
 [core]
 	excludesfile = ~/.gitignore_global
 	editor = vim
