@@ -31,3 +31,6 @@ command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'opti
 
 " Auto save
 set autowriteall
+
+set relativenumber
+
