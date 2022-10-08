@@ -1,4 +1,6 @@
-(set-face-attribute 'default nil :family "Jetbrains Mono" :height 140)
+(cond
+ ((find-font (font-spec :name "Jetbrains Mono"))
+    (set-face-attribute 'default nil :family "Jetbrains Mono" :height 140)))
 (setq exec-path (append exec-path '("~/Documents/apps/bin")))
 (setq line-spacing 5)
 

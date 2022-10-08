@@ -1,7 +1,7 @@
+#!/bin/bash
 # This script creates the RC files and sets up all the requirments for apps to
 # start working properly
 
-#!/bin/sh
 set -eu
 
 # Check zsh exists
