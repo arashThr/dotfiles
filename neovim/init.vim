@@ -1,6 +1,6 @@
 " Indentation
 set expandtab
-set shiftwidth=4
+set shiftwidth=2
 
 " Better search
 set ignorecase
@@ -23,8 +23,7 @@ map <Leader>b :Buffers<CR>
 map <Leader>t :BTag<CR>
 map <Leader>p :GFiles<CR>
 
-set spelllang=en
-set spellsuggest=best,9
+let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
 
 " Ag: Only looks at content, not file names
 command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
@@ -32,5 +31,17 @@ command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'opti
 " Auto save
 set autowriteall
 
+" Line numbers
 set relativenumber
+set number
 
+" Spelling
+set spelllang=en
+set spellsuggest=best,9
+
+" Highlight spelling error
+hi clear SpellBad
+hi SpellBad cterm=underline ctermfg=red
+hi SpellBad gui=undercurl
+
+source ~/.config/nvim/aliases.vim

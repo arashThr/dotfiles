@@ -8,7 +8,7 @@
 
 \x auto
 \set VERBOSITY verbose
-\set HISTFILE /home/nobody/.psql_history- :DBNAME
+\set HISTFILE ~/.psql_history- :DBNAME
 \set HISTCONTROL ignoredups
 \set COMP_KEYWORD_CASE upper
 \unset QUIET

@@ -25,5 +25,8 @@
 	ui = true
 	status = true
 	diff = true
+[mergetool "vimdiff"]
+	cmd = "nvim  -d $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J | wincmd ='"
+
 #[commit]
 #	template = /Users/arash/.stCommitMsg
