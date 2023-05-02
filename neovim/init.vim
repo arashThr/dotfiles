@@ -19,13 +19,19 @@ map <F5> :NERDTreeToggle<CR>
 nmap <F8> :TagbarToggle<CR>
 
 " CtrlP mappings
-map <Leader>b :Buffers<CR>
-map <Leader>t :BTag<CR>
-map <Leader>p :GFiles<CR>
-map <Leader>f :Files<CR>
+" map <Leader>b :Buffers<CR>
+" map <Leader>t :BTag<CR>
+" map <Leader>p :GFiles<CR>
+" map <Leader>f :Files<CR>
 
-" Marks mappings
-map <Leader>m :Marks<CR>
+" Telescope mappings
+map <Leader>b :Telescope buffers<CR>
+map <Leader>t :Telescope tags<CR>
+map <Leader>p :Telescope git_files<CR>
+map <Leader>f :Telescope find_files<CR>
+map <Leader>g :Telescope live_grep<CR>
+map <Leader>h :Telescope help_tags<CR>
+map <Leader>m :Telescope marks<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
 

@@ -2,13 +2,26 @@ local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
   use 'neovim/nvim-lspconfig' -- Collection of configurations for the built-in LSP client
-  use 'junegunn/fzf'
-  use 'junegunn/fzf.vim'
+
+  -- use 'junegunn/fzf'
+  -- use 'junegunn/fzf.vim'
+  use 'nvim-telescope/telescope.nvim'
+  use 'nvim-lua/plenary.nvim'
+  -- use 'nvim-treesitter/nvim-treesitter'
+
+  -- Better autocomplete
+  use 'hrsh7th/nvim-compe'
+  use 'hrsh7th/vim-vsnip'
+  use 'hrsh7th/vim-vsnip-integ'
+  use 'rafamadriz/friendly-snippets'
+
   use 'preservim/tagbar'
   use 'airblade/vim-gitgutter'
   use 'tpope/vim-fugitive'
+
   use 'tpope/vim-commentary'
   use 'preservim/nerdtree'
+
   use 'vimwiki/vimwiki'
   use 'wellle/context.vim'
   use 'mbbill/undotree'
@@ -57,4 +70,37 @@ for _, lsp in pairs(servers) do
     }
   }
 end
+
+-- Autocomplete
+vim.o.completeopt = "menuone,noselect"
+require'compe'.setup {
+  enabled = true;
+  autocomplete = true;
+  debug = false;
+  min_length = 1;
+  preselect = 'enable';
+  throttle_time = 80;
+  source_timeout = 200;
+  incomplete_delay = 400;
+  max_abbr_width = 1000;
+  max_kind_width = 1000;
+  max_menu_width = 1000;
+  documentation = true;
+
+  source = {
+    path = true;
+    buffer = true;
+    calc = true;
+    nvim_lsp = true;
+    nvim_lua = true;
+    vsnip = true;
+  };
+}
+
+-- Telescope
+require('telescope').setup{
+  defaults = {
+    file_ignore_patterns = { "node_modules" },
+  }
+}
 
