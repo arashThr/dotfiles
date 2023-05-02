@@ -22,6 +22,10 @@ nmap <F8> :TagbarToggle<CR>
 map <Leader>b :Buffers<CR>
 map <Leader>t :BTag<CR>
 map <Leader>p :GFiles<CR>
+map <Leader>f :Files<CR>
+
+" Marks mappings
+map <Leader>m :Marks<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
 

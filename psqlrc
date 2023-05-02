@@ -1,4 +1,6 @@
+-- Start
 \set QUIET 1
+
 \pset null '¤'
 
 -- SELECT * FROM<enter>. %R shows what type of input it expects.
@@ -8,8 +10,15 @@
 
 \x auto
 \set VERBOSITY verbose
+
+-- History file
 \set HISTFILE ~/.psql_history- :DBNAME
 \set HISTCONTROL ignoredups
-\set COMP_KEYWORD_CASE upper
-\unset QUIET
 
+\set COMP_KEYWORD_CASE upper
+
+-- Vim as default editor
+\setenv PSQL_EDITOR "/usr/bin/vim"
+
+-- End
+\unset QUIET

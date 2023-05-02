@@ -11,6 +11,7 @@ require('packer').startup(function()
   use 'preservim/nerdtree'
   use 'vimwiki/vimwiki'
   use 'wellle/context.vim'
+  use 'mbbill/undotree'
 end)
 
 -- Mappings.
