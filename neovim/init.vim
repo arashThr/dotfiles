@@ -32,6 +32,7 @@ map <Leader>f :Telescope find_files<CR>
 map <Leader>g :Telescope live_grep<CR>
 map <Leader>h :Telescope help_tags<CR>
 map <Leader>m :Telescope marks<CR>
+map <Leader>s :Telescope current_buffer_fuzzy_find<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
 

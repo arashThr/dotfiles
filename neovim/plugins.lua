@@ -101,6 +101,12 @@ require'compe'.setup {
 require('telescope').setup{
   defaults = {
     file_ignore_patterns = { "node_modules" },
+  },
+  pickers = {
+    buffers = {
+      sort_mru = true,
+      ignore_current_buffer = true
+    }
   }
 }
 
