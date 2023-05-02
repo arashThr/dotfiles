@@ -32,6 +32,10 @@ let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
 " Ag: Only looks at content, not file names
 command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
 
+" Enable calendar in vimwiki
+" let g:vimwiki_use_calendar = 1
+let g:vimwiki_list = [{'auto_diray_index': 1}]
+
 " Auto save
 set autowriteall
 
@@ -48,4 +52,17 @@ hi clear SpellBad
 hi SpellBad cterm=underline ctermfg=red
 hi SpellBad gui=undercurl
 
-source ~/.config/nvim/aliases.vim
+" Create a variable that has the path to the aliases file
+let g:aliases_file = $HOME . '/.config/nvim/aliases.vim'
+
+" Check if the aliase file exists and if it does, source it
+if filereadable(g:aliases_file)
+  execute 'source ' . g:aliases_file
+endif
+
+
+" Disable Copilot autocompletion for Markdown files
+" let g:copilot_disable_for_markdown = 1
+" let g:copilot_filetypes = { 'markdown': v:false }
+" let g:copilot_disable_filetypes = ['markdown']
+

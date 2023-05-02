@@ -4,14 +4,22 @@
 (setq exec-path (append exec-path '("~/Documents/apps/bin")))
 (setq line-spacing 5)
 
+;; Set selected region background color
+(set-face-attribute 'region nil :background "#666")
+
+;; Disable ring bell
+;; (setq ring-bell-function 'ignore)
+
+(setq projectile-project-search-path '("~/Documents/workspace/"))
+
 ;;;====================
 ; Checkout https://github.com/susam/emfy for more configs
 ;;; Emfy 0.3.0-dev <https://github.com/susam/emfy>
 
 ;; Customize user interface.
-(menu-bar-mode 0)
+;; (menu-bar-mode 0)
 (when (display-graphic-p)
-  (tool-bar-mode 0)
+;;(tool-bar-mode 0)
   (scroll-bar-mode 0))
 (setq inhibit-startup-screen t)
 (column-number-mode)

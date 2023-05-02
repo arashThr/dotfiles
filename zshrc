@@ -151,6 +151,22 @@ convert_pics () {
     done;
 }
 
+convert_pic () {
+    file=$1
+    if [ -z "$file" ]; then
+        echo "File name is missing: fileName [size=600]"
+        return
+    fi
+
+    if [[ ! -f "$file" ]]; then
+        echo "$file does not exist"
+        return
+    fi
+
+    size=${2:-600}
+    convert $file -sampling-factor 4:2:0 -strip -quality 80 -interlace JPEG -colorspace sRGB -resize $size small-$1
+}
+
 ### SYSTEM SPECIFIC ###
 local_rc_file=$HOME/.localrc.sh
 if [ -f $local_rc_file ]; then
