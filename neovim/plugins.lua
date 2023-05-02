@@ -10,6 +10,7 @@ require('packer').startup(function()
   use 'tpope/vim-commentary'
   use 'preservim/nerdtree'
   use 'vimwiki/vimwiki'
+  use 'wellle/context.vim'
 end)
 
 -- Mappings.
