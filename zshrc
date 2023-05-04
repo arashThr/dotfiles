@@ -177,7 +177,7 @@ if [[ $TERM == "dumb" ]]; then
     export PS1="$ "
 fi
 
-local_bin="$HOME/Documents/apps"
+local_bin="$HOME/Documents/apps/bin"
 export PATH=$local_bin:$HOME/.local/bin:$PATH
 
 export DENO_INSTALL="~/.deno"
