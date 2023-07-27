@@ -19,7 +19,7 @@ link_file() {
     ln -s $from $to
 }
 
-for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global tmux.conf; do
+for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global tmux.conf ideavimrc; do
     link_file `pwd`/$rc_file $HOME/.$rc_file
 done
 
