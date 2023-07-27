@@ -73,3 +73,10 @@ endif
 " let g:copilot_filetypes = { 'markdown': v:false }
 " let g:copilot_disable_filetypes = ['markdown']
 
+" Disable Copilot autocompletion for Vimwiki files
+let g:copilot_disable_for_vimwiki = 1
+let g:copilot_filetypes = { 'vimwiki': v:false }
+let g:copilot_disable_filetypes = ['vimwiki']
+
+colorscheme slate
+
