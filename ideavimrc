@@ -1,3 +1,8 @@
 map w [w
 map e ]w
 map b [b 
+
+set relativenumber
+set number
+
+set visualbell
