@@ -9,6 +9,7 @@
 	excludesfile = ~/.gitignore_global
 	editor = vim
 	pager = less -r
+	autocrlf = input
 [diff]
 	tool = vimdiff
 [difftool]
