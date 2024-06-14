@@ -5,9 +5,16 @@ require('packer').startup(function()
 
   -- use 'junegunn/fzf'
   -- use 'junegunn/fzf.vim'
+  use {'junegunn/fzf', run = function()
+    vim.fn['fzf#install']()
+    end
+  }
   use 'nvim-telescope/telescope.nvim'
   use 'nvim-lua/plenary.nvim'
-  -- use 'nvim-treesitter/nvim-treesitter'
+
+  -- Error window
+  -- use {'kevinhwang91/nvim-bqf', ft = 'qf'}
+  -- use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
 
   -- Better autocomplete
   use 'hrsh7th/nvim-compe'
@@ -29,6 +36,7 @@ end)
 local lspconfig = require('lspconfig')
 lspconfig.pyright.setup {}
 lspconfig.tsserver.setup {}
+lspconfig.gopls.setup {}
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions

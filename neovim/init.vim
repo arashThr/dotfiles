@@ -67,6 +67,8 @@ if filereadable(g:aliases_file)
   execute 'source ' . g:aliases_file
 endif
 
+" Press escape to exit terminal mode
+tnoremap <Esc> <C-\><C-n>
 
 " Disable Copilot autocompletion for Markdown files
 " let g:copilot_disable_for_markdown = 1
@@ -78,5 +80,12 @@ let g:copilot_disable_for_vimwiki = 1
 let g:copilot_filetypes = { 'vimwiki': v:false }
 let g:copilot_disable_filetypes = ['vimwiki']
 
-colorscheme slate
+" Ignore paths
+set wildignore+=**/node_modules/**
 
+" Folding
+set nofoldenable " Disable folding by default
+autocmd FileType javascript,typescript setlocal foldmethod=syntax " Enable folding for JavaScript and TypeScript
+
+" Get rid of ~file
+set nobackup

@@ -77,7 +77,7 @@ setopt HIST_VERIFY               # Don't execute immediately upon history expans
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker docker-compose)
+plugins=(git docker docker-compose colored-man-pages)
 
 # User configuration
 
@@ -115,11 +115,6 @@ source $ZSH/oh-my-zsh.sh
 autoload -U compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
 
-# Install Ruby Gems to ~/.gems
-export GEM_HOME="$HOME/.gems"
-export GEM_PATH="$HOME/.gems"
-export PATH="$PATH:$HOME/.gems/bin"
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
@@ -151,6 +146,12 @@ convert_pics () {
     done;
 }
 
+auto_convert () {
+  for file in *.jpg; do
+    magick "$file" -quality 85 "smaller_${file}"
+  done
+}
+
 convert_pic () {
     file=$1
     if [ -z "$file" ]; then
@@ -180,5 +181,26 @@ fi
 local_bin="$HOME/Documents/apps/bin"
 export PATH=$local_bin:$HOME/.local/bin:$PATH
 
-export DENO_INSTALL="~/.deno"
+### Langugaes and Apps ###
+
+# Install Ruby Gems to ~/.gems
+export GEM_HOME="$HOME/.gems"
+export GEM_PATH="$HOME/.gems"
+export PATH="$PATH:$HOME/.gems/bin"
+
+export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
+
+export GOPATH="$HOME/.go"
+export PATH="$GOPATH/bin:$PATH"
+
+export VOLTA_HOME="$HOME/.volta"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+export LANG="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
