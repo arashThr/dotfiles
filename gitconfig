@@ -2,9 +2,15 @@
 [user]
 	name = Arash Taher
 	email = arashThr@outlook.com
+
 # Work specific git configs
 [includeIf "gitdir:~/Documents/workspace/work/"]
 	path = ~/Documents/workspace/work/gitconfig
+
+# SSH config is set to use personal key for these repos
+[url "git@github-arash:arashThr"]
+	insteadOf = git@github.com:arashThr
+
 [core]
 	excludesfile = ~/.gitignore_global
 	editor = vim
@@ -29,5 +35,3 @@
 [mergetool "vimdiff"]
 	cmd = "nvim  -d $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J | wincmd ='"
 
-#[commit]
-#	template = /Users/arash/.stCommitMsg
