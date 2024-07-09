@@ -16,9 +16,6 @@ require('packer').startup(function()
   -- use {'kevinhwang91/nvim-bqf', ft = 'qf'}
   -- use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
 
-  -- Better autocomplete
-  use 'hrsh7th/nvim-compe'
-
   use 'airblade/vim-gitgutter'
   use 'tpope/vim-fugitive'
 
@@ -75,32 +72,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, opts)
   end,
 })
-
--- Autocomplete
-vim.o.completeopt = "menuone,noselect"
-require'compe'.setup {
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'enable';
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 1000;
-  max_kind_width = 1000;
-  max_menu_width = 1000;
-  documentation = true;
-
-  source = {
-    path = true;
-    buffer = true;
-    calc = true;
-    nvim_lsp = true;
-    nvim_lua = true;
-    vsnip = true;
-  };
-}
 
 -- Telescope
 require('telescope').setup{
