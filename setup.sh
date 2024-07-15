@@ -4,6 +4,12 @@
 
 set -eu
 
+read -p "This script will remove the previous config files. Are you okay with that? " -n 1 -r
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+  [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+fi
+
 # Check zsh exists
 if ! type zsh &> /dev/null; then
     echo 'ZSH command does not exits'
@@ -40,12 +46,18 @@ link_file `pwd`/neovim/init.vim $nvim_path/init.vim
 link_file `pwd`/neovim/plugins.lua $nvim_path/lua/plugins.lua
 
 # Install plugins
-git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+if [ ! -d ~/.local/share/nvim/site/pack/packer ]; then
+  echo "Installing Packer"
+  git clone --depth 1 https://github.com/wbthomason/packer.nvim\
      ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+fi
 nvim -c 'PackerInstall' -c 'qa!'
 
 # Install VIM plugins
-git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
+  echo "Installing Vundle for VIM"
+  git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+fi
 vim -c 'PluginInstall' -c 'qa!'
 
 # Create config.d directory for SSH config files
@@ -53,7 +65,7 @@ ssh_dir=$HOME/.ssh
 ssh_config=$ssh_dir/config
 
 [ -d $ssh_dir/config.d ] || mkdir $ssh_dir/config.d
-[ -L $ssh_config ] && rm $ssh_config
-echo 'Linking ssh config file'
+[ -L $ssh_config ] && echo "Removing $ssh_config" && rm $ssh_config
+echo "Linking ssh config file at $ssh_config"
 ln -s `pwd`/ssh-configs $ssh_config
 

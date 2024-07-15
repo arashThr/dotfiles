@@ -3,8 +3,6 @@ require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
   use 'neovim/nvim-lspconfig' -- Collection of configurations for the built-in LSP client
 
-  -- use 'junegunn/fzf'
-  -- use 'junegunn/fzf.vim'
   use {'junegunn/fzf', run = function()
     vim.fn['fzf#install']()
     end
@@ -16,8 +14,8 @@ require('packer').startup(function()
   -- use {'kevinhwang91/nvim-bqf', ft = 'qf'}
   -- use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
 
-  use 'airblade/vim-gitgutter'
   use 'tpope/vim-fugitive'
+  use 'airblade/vim-gitgutter'
 
   use 'tpope/vim-commentary'
   use 'preservim/nerdtree'
@@ -26,7 +24,7 @@ require('packer').startup(function()
   use 'wellle/context.vim'
   use 'mbbill/undotree'
 
-  use 'github/copilot.vim'
+  -- use 'github/copilot.vim'
 end)
 
 -- Setup language servers.
