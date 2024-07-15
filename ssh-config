@@ -3,6 +3,9 @@
 # Put your work configs in config.d directory
 Include config.d/*
 
+IgnoreUnknown UseKeychain
+UseKeychain yes
+
 AddKeysToAgent yes
 
 Host github-arash
