@@ -1,13 +1,13 @@
 # NOTE: DO NOT put sensitive information here
 
+# Put your work configs in config.d directory
 Include config.d/*
 
 AddKeysToAgent yes
-UseKeychain yes
 
 Host github-arash
   HostName github.com
-  IdentityFile ~/.ssh/arash_rsa
+  IdentityFile ~/.ssh/arash_id
 
 Host github.com
   IdentityFile ~/.ssh/id_ed25519

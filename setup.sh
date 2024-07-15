@@ -67,5 +67,5 @@ ssh_config=$ssh_dir/config
 [ -d $ssh_dir/config.d ] || mkdir $ssh_dir/config.d
 [ -L $ssh_config ] && echo "Removing $ssh_config" && rm $ssh_config
 echo "Linking ssh config file at $ssh_config"
-ln -s `pwd`/ssh-configs $ssh_config
+ln -s `pwd`/ssh-config $ssh_config
 
