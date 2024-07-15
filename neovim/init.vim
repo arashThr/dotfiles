@@ -25,14 +25,21 @@ nmap <F8> :TagbarToggle<CR>
 " map <Leader>f :Files<CR>
 
 " Telescope mappings
-map <Leader>b :Telescope buffers<CR>
-map <Leader>t :Telescope tags<CR>
-map <Leader>p :Telescope git_files<CR>
-map <Leader>f :Telescope find_files<CR>
-map <Leader>g :Telescope live_grep<CR>
-map <Leader>h :Telescope help_tags<CR>
-map <Leader>m :Telescope marks<CR>
-map <Leader>s :Telescope current_buffer_fuzzy_find<CR>
+map <Leader>fb :Telescope buffers<CR>
+map <Leader>ft :Telescope tags<CR>
+map <Leader>fp :Telescope git_files<CR>
+map <Leader>ff :Telescope find_files<CR>
+map <Leader>fg :Telescope live_grep<CR>
+map <Leader>fm :Telescope marks<CR>
+map <Leader>fs :Telescope current_buffer_fuzzy_find<CR>
+map <Leader>fh :Telescope help_tags<CR>
+
+map <Leader>gr :Telescope lsp_references<CR>
+map <Leader>gi :Telescope lsp_incoming_calls<CR>
+map <Leader>go :Telescope lsp_outgoing_calls<CR>
+map <Leader>gw :Telescope lsp_dynamic_workspace_symbols<CR>
+map <Leader>gs :Telescope lsp_document_symbols<CR>
+map <Leader>gd :Telescope diagnostics<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
 
@@ -89,3 +96,4 @@ autocmd FileType javascript,typescript setlocal foldmethod=syntax " Enable foldi
 
 " Get rid of ~file
 set nobackup
+
