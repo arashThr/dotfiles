@@ -39,11 +39,14 @@ nnoremap <Leader>fs :Telescope current_buffer_fuzzy_find<CR>
 nnoremap <Leader>fh :Telescope help_tags<CR>
 
 nnoremap <Leader>gr :Telescope lsp_references<CR>
-nnoremap <Leader>gi :Telescope lsp_incoming_calls<CR>
-nnoremap <Leader>go :Telescope lsp_outgoing_calls<CR>
-nnoremap <Leader>gw :Telescope lsp_dynamic_workspace_symbols<CR>
 nnoremap <Leader>gs :Telescope lsp_document_symbols<CR>
-nnoremap <Leader>gd :Telescope diagnostics<CR>
+nnoremap <Leader>gi :Telescope lsp_implementations<CR>
+nnoremap <Leader>gT :Telescope lsp_type_definitions<CR>
+nnoremap <Leader>gd :Telescope lsp_definitions<CR>
+nnoremap <Leader>gn :Telescope diagnostics<CR>
+nnoremap <Leader>gw :Telescope lsp_dynamic_workspace_symbols<CR>
+nnoremap <Leader>gic :Telescope lsp_incoming_calls<CR>
+nnoremap <Leader>goc :Telescope lsp_outgoing_calls<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
 
