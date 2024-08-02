@@ -1,6 +1,10 @@
 " Indentation
 set expandtab
 set shiftwidth=2
+set tabstop=2
+
+" Theme
+colorscheme wildcharm
 
 " Better search
 set ignorecase
@@ -12,34 +16,34 @@ set pastetoggle=<F2>
 lua require('plugins')
 
 " NERDTree
-map <Leader>e :NERDTreeFind<CR>
+nnoremap <Leader>e :NERDTreeFind<CR>
 map <F5> :NERDTreeToggle<CR>
 
 " Tagbar
 nmap <F8> :TagbarToggle<CR>
 
-" CtrlP mappings
-" map <Leader>b :Buffers<CR>
-" map <Leader>t :BTag<CR>
-" map <Leader>p :GFiles<CR>
-" map <Leader>f :Files<CR>
+" Make mappings
+nnoremap <leader>mr :!make run<CR>
+nnoremap <leader>mb :!make build<CR>
+nnoremap <leader>mc :!make clean<CR>
+nmap <F10> :!make<CR>
 
 " Telescope mappings
-map <Leader>fb :Telescope buffers<CR>
-map <Leader>ft :Telescope tags<CR>
-map <Leader>fp :Telescope git_files<CR>
-map <Leader>ff :Telescope find_files<CR>
-map <Leader>fg :Telescope live_grep<CR>
-map <Leader>fm :Telescope marks<CR>
-map <Leader>fs :Telescope current_buffer_fuzzy_find<CR>
-map <Leader>fh :Telescope help_tags<CR>
+nnoremap <Leader>b :Telescope buffers<CR>
+nnoremap <Leader>p :Telescope git_files<CR>
+nnoremap <Leader>ft :Telescope tags<CR>
+nnoremap <Leader>ff :Telescope find_files<CR>
+nnoremap <Leader>fg :Telescope live_grep<CR>
+nnoremap <Leader>fm :Telescope marks<CR>
+nnoremap <Leader>fs :Telescope current_buffer_fuzzy_find<CR>
+nnoremap <Leader>fh :Telescope help_tags<CR>
 
-map <Leader>gr :Telescope lsp_references<CR>
-map <Leader>gi :Telescope lsp_incoming_calls<CR>
-map <Leader>go :Telescope lsp_outgoing_calls<CR>
-map <Leader>gw :Telescope lsp_dynamic_workspace_symbols<CR>
-map <Leader>gs :Telescope lsp_document_symbols<CR>
-map <Leader>gd :Telescope diagnostics<CR>
+nnoremap <Leader>gr :Telescope lsp_references<CR>
+nnoremap <Leader>gi :Telescope lsp_incoming_calls<CR>
+nnoremap <Leader>go :Telescope lsp_outgoing_calls<CR>
+nnoremap <Leader>gw :Telescope lsp_dynamic_workspace_symbols<CR>
+nnoremap <Leader>gs :Telescope lsp_document_symbols<CR>
+nnoremap <Leader>gd :Telescope diagnostics<CR>
 
 let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
 

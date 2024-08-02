@@ -9,3 +9,4 @@
 - Create `Documents/workspace/work` for work related repos
 - Add `gitconfigure` for the work related stuff in `work` directory (Should be just the name and email)
 - Run the `setup.sh` script to link the rc files
+- Enable key repeat for VSCode by running [this command](https://github.com/VSCodeVim/Vim#mac): `defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false`
