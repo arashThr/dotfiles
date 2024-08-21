@@ -45,6 +45,8 @@ nvim_path=$HOME/.config/nvim
 link_file `pwd`/neovim/init.vim $nvim_path/init.vim
 link_file `pwd`/neovim/plugins.lua $nvim_path/lua/plugins.lua
 
+# LSP Config
+git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/nvim/start/nvim-lspconfig
 # Install plugins
 if [ ! -d ~/.local/share/nvim/site/pack/packer ]; then
   echo "Installing Packer"
@@ -52,6 +54,7 @@ if [ ! -d ~/.local/share/nvim/site/pack/packer ]; then
      ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 fi
 nvim -c 'PackerInstall' -c 'qa!'
+
 
 # Install VIM plugins
 if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
@@ -68,4 +71,12 @@ ssh_config=$ssh_dir/config
 [ -L $ssh_config ] && echo "Removing $ssh_config" && rm $ssh_config
 echo "Linking ssh config file at $ssh_config"
 ln -s `pwd`/ssh-config $ssh_config
+
+# NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+omz reload
+nvm install --lts
+
+# JS/TS LSP
+npm install -g typescript-language-server typescript
 
