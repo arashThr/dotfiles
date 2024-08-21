@@ -1,10 +1,16 @@
 " Indentation
-set expandtab
+" set expandtab " This is not desired for Go
 set shiftwidth=2
 set tabstop=2
 
-" Theme
-colorscheme wildcharm
+" Set Space as lead char
+" nnoremap <SPACE> <Nop>
+" let mapleader="\<Space>"
+
+" Light theme
+" colorscheme zellner
+"Dark theme
+colorscheme habamax
 
 " Better search
 set ignorecase
@@ -48,14 +54,13 @@ nnoremap <Leader>gw :Telescope lsp_dynamic_workspace_symbols<CR>
 nnoremap <Leader>gic :Telescope lsp_incoming_calls<CR>
 nnoremap <Leader>goc :Telescope lsp_outgoing_calls<CR>
 
-let g:vimwiki_list = [{'path': '~/Documents/notes/'}]
-
 " Ag: Only looks at content, not file names
 command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
 
+" Vim wiki
 " Enable calendar in vimwiki
-" let g:vimwiki_use_calendar = 1
-let g:vimwiki_list = [{'auto_diray_index': 1}]
+let g:vimwiki_list = [{'auto_diary_index': 1}]
+let g:vimwiki_list = [{'path': '~/Documents/notes/', 'syntax': 'markdown', 'ext': 'md'}]
 
 " Auto save
 set autowriteall
@@ -89,10 +94,8 @@ tnoremap <Esc> <C-\><C-n>
 " let g:copilot_filetypes = { 'markdown': v:false }
 " let g:copilot_disable_filetypes = ['markdown']
 
-" Disable Copilot autocompletion for Vimwiki files
-let g:copilot_disable_for_vimwiki = 1
-let g:copilot_filetypes = { 'vimwiki': v:false }
-let g:copilot_disable_filetypes = ['vimwiki']
+" Disable Copilot. Run it manually by pressin option + \
+let g:copilot_filetypes = { '*': v:false }
 
 " Ignore paths
 set wildignore+=**/node_modules/**
@@ -103,4 +106,3 @@ autocmd FileType javascript,typescript setlocal foldmethod=syntax " Enable foldi
 
 " Get rid of ~file
 set nobackup
-

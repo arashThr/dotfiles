@@ -3,15 +3,20 @@ require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
   use 'neovim/nvim-lspconfig' -- Collection of configurations for the built-in LSP client
 
+  use 'hrsh7th/nvim-cmp' -- Collection of configurations for the built-in LSP client
+	use 'hrsh7th/cmp-nvim-lsp'
+
+	use 'fatih/vim-go'
+
   use {'junegunn/fzf', run = function()
     vim.fn['fzf#install']()
     end
   }
   use 'nvim-telescope/telescope.nvim'
-  use 'nvim-lua/plenary.nvim'
+  use 'nvim-lua/plenary.nvim' -- Required by Telescope
 
   -- Error window
-  -- use {'kevinhwang91/nvim-bqf', ft = 'qf'}
+  use {'kevinhwang91/nvim-bqf', ft = 'qf'}
   -- use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
 
   use 'tpope/vim-fugitive'
@@ -20,11 +25,11 @@ require('packer').startup(function()
   use 'tpope/vim-commentary'
   use 'preservim/nerdtree'
 
-  use 'vimwiki/vimwiki'
+  -- use 'vimwiki/vimwiki'
   use 'wellle/context.vim'
   use 'mbbill/undotree'
 
-  -- use 'github/copilot.vim'
+  use 'github/copilot.vim'
 end)
 
 -- Setup language servers.
@@ -84,3 +89,24 @@ require('telescope').setup{
   }
 }
 
+-- CMP
+local cmp = require'cmp'
+cmp.setup({
+	window = {
+		-- completion = cmp.config.window.bordered(),
+		documentation = cmp.config.window.bordered(),
+	},
+	mapping = cmp.mapping.preset.insert({
+		['<C-b>'] = cmp.mapping.scroll_docs(-4),
+		['<C-f>'] = cmp.mapping.scroll_docs(4),
+		['<C-Space>'] = cmp.mapping.complete(),
+		['<C-e>'] = cmp.mapping.abort(),
+		['<Tab>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+		['<CR>'] = cmp.mapping.confirm({ select = true }),
+	}),
+	sources = cmp.config.sources({
+		{ name = 'nvim_lsp' },
+	}, {
+		-- { name = 'buffer' },
+	})
+})
