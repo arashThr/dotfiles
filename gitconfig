@@ -26,6 +26,9 @@
 	defaultBranch = main
 [pull]
 	ff = only
+[push]
+  autoSetupRemote = true
+  default = current
 [rerere]
 	enabled = true
 [color]
