@@ -168,6 +168,10 @@ convert_pic () {
     convert $file -sampling-factor 4:2:0 -strip -quality 80 -interlace JPEG -colorspace sRGB -resize $size small-$1
 }
 
+export LANG="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
 ### SYSTEM SPECIFIC ###
 local_rc_file=$HOME/.localrc.sh
 if [ -f $local_rc_file ]; then
@@ -194,13 +198,7 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 export GOPATH="$HOME/.go"
 export PATH="$GOPATH/bin:$PATH"
 
-export VOLTA_HOME="$HOME/.volta"
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-export LANG="en_US.UTF-8"
-export LC_CTYPE="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-
+### AI Stuff ###
+q() {
+ llm -s "Answer in as few words as possible. Use a brief style with short replies. Put yourself in the position of an experienced software developer." -m 4o-mini "$*"
+}
