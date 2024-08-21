@@ -1,7 +1,5 @@
 #!/bin/bash
 
-sudo apt -y install zsh git curl silversearcher-ag exuberant-ctags man-db vim tmux
-
 # dotfiles
 wget -O ~/.vimrc https://raw.githubusercontent.com/arashthr/dotfiles/master/.vimrc
 wget -O ~/.tmux.conf https://raw.githubusercontent.com/arashthr/dotfiles/master/.tmux.conf
@@ -34,25 +32,27 @@ vstags
 .build/
 GIT
 
+# Install ZSH
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+else
+  # rm -rf $HOME/.oh-my-zsh/
+  echo "oh-my-zsh already exists"
+fi
+sudo chsh -s /usr/bin/zsh nobody
+
+# Config Git
+curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+
 # Add new apps to ~/Documents/apps
 local_bin="$HOME/Documents/apps"
 mkdir -p $local_bin/bin
 export PATH=$PATH:$local_bin/bin
 
-# fzf
-wget https://github.com/junegunn/fzf/releases/download/0.24.3/fzf-0.24.3-linux_amd64.tar.gz -O ~/fzf.tar.gz
-tar -xzf ~/fzf.tar.gz -C $local_bin
-rm ~/fzf.tar.gz
+# NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+omz reload
+nvm install --lts
 
-# rg
-wget https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz -O ~/ripgrep.tar.gz
-tar -xzf ~/ripgrep.tar.gz -C ~
-cp ~/ripgrep-12.1.1-x86_64-unknown-linux-musl/rg $local_bin
-rm -Rf ~/ripgrep*
-
-# Github CLI
-wget https://github.com/cli/cli/releases/download/v1.10.3/gh_1.10.3_linux_386.tar.gz -O ~/gh_1.tar.gz
-tar -xzf ~/gh_1.tar.gz -C ~
-cp ~/gh_1.10.3_linux_386/bin/gh $local_bin
-rm -Rf ~/gh_1*
-
+# JS/TS LSP
+npm install -g typescript-language-server typescript
