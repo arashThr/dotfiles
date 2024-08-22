@@ -8,7 +8,6 @@
 - Create `Documents/workspace/work` for work related repos
 - Add `gitconfigure` for the work related stuff in `work` directory (Usually just the name and email)
 - Run the `setup.sh` script to link the rc files
-- Enable key repeat for VSCode by running [this command](https://github.com/VSCodeVim/Vim#mac): `defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false`
 
 ### Mac settings
 - Setup finger print
@@ -23,12 +22,18 @@
 	- New finder window to open home
 	- Show file name extension
 	- Search in current folder
+- Keyboard
+    - Function key
+    - Mission control: Control + up/down
+    - Add Farsi
 
 ### Apps
 - Firefox
 - Chrome
 - Sublime
 - VSCode
+    - Enable key repeat for VSCode by running [this command](https://github.com/VSCodeVim/Vim#mac): `defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false`
 - iTerm2
 - ChatGPT
+    - Enable spell checking
 
