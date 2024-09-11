@@ -25,7 +25,7 @@ link_file() {
     ln -s $from $to
 }
 
-for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global tmux.conf ideavimrc; do
+for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global tmux.conf ideavimrc localrc_sample; do
     link_file `pwd`/$rc_file $HOME/.$rc_file
 done
 
@@ -78,5 +78,5 @@ omz reload
 nvm install --lts
 
 # JS/TS LSP
-npm install -g typescript-language-server typescript
+npm install -g typescript-language-server typescript yarn
 

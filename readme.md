@@ -26,6 +26,7 @@
     - Function key
     - Mission control: Control + up/down
     - Add Farsi
+    - Remove ^Space for input source change
 
 ### Apps
 - Firefox
