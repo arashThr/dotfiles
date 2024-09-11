@@ -1,0 +1,16 @@
+
+startApp() {
+	dirname=$(basename `pwd`)
+	echo "Starting $dirname"
+	case $dirname in
+		"subgraph")
+			echo "Make sure you've done yarn install"
+			;;
+		"api")
+			echo "Run 'docker compose db up' first"
+			;;
+		*)
+			echo "Unknown app"
+			;;
+	esac
+}
