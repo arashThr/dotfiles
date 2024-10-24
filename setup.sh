@@ -4,12 +4,6 @@
 
 set -eu
 
-read -p "This script will remove the previous config files. Are you okay with that? " -n 1 -r
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-  [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
-fi
-
 # Check zsh exists
 if ! type zsh &> /dev/null; then
     echo 'ZSH command does not exits'
@@ -25,7 +19,13 @@ link_file() {
     ln -s $from $to
 }
 
-for rc_file in vimrc zshrc replyrc psqlrc emacs gitconfig gitignore_global tmux.conf ideavimrc localrc_sample; do
+for rc_file in vimrc zshrc psqlrc gitconfig gitignore_global tmux.conf localrc_sample; do
+    read -p "Replace $rc_file? " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+        continue
+    fi
     link_file `pwd`/$rc_file $HOME/.$rc_file
 done
 
@@ -74,7 +74,6 @@ ln -s `pwd`/ssh-config $ssh_config
 
 # NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-omz reload
 nvm install --lts
 
 # JS/TS LSP

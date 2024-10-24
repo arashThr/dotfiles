@@ -1,6 +1,5 @@
 # Setup
 
-## Mac
 - Install the required apps by running `[mac|linux]-setup.sh`
 - SSH keys
   - (If required) Generate the SSH keys for the git with default name
@@ -9,7 +8,7 @@
 - Add `gitconfigure` for the work related stuff in `work` directory (Usually just the name and email)
 - Run the `setup.sh` script to link the rc files
 
-### Mac settings
+## Mac settings
 - Setup finger print
 - Trackpad
 	- Enable tap for click
@@ -28,7 +27,7 @@
     - Add Farsi
     - Remove ^Space for input source change
 
-### Apps
+## Apps
 - Firefox
 - Chrome
 - Sublime
