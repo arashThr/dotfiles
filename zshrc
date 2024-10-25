@@ -146,9 +146,10 @@ convert_pics () {
     done;
 }
 
+# brew install imagemagick
 auto_convert () {
   for file in *.jpg; do
-    magick "$file" -quality 85 "smaller_${file}"
+    magick "$file" -quality 85 "smaller_${file%.*}.jpg"
   done
 }
 
@@ -200,5 +201,5 @@ export PATH="$GOPATH/bin:$PATH"
 
 ### AI Stuff ###
 q() {
- llm -s "Answer in as few words as possible. Use a brief style with short replies. Put yourself in the position of an experienced software developer." -m 4o-mini "$*"
+	llm -s "Answer in as few words as possible. Use a brief style with short replies. Put yourself in the position of an experienced software developer." -m 4o-mini $@
 }
