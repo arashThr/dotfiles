@@ -22,12 +22,9 @@ require('packer').startup(function()
   use 'tpope/vim-fugitive'
   use 'airblade/vim-gitgutter'
 
-  use 'tpope/vim-commentary'
   use 'preservim/nerdtree'
 
-  -- use 'vimwiki/vimwiki'
-  use 'wellle/context.vim'
-  use 'mbbill/undotree'
+	use 'echasnovski/mini.nvim'
 
   use 'github/copilot.vim'
 end)
@@ -36,7 +33,19 @@ end)
 local lspconfig = require('lspconfig')
 lspconfig.pyright.setup {}
 lspconfig.tsserver.setup {}
-lspconfig.gopls.setup {}
+lspconfig.gopls.setup {
+	settings = {
+		gopls = {
+			-- In my project, we have this flag for integration tests
+			buildFlags = { "-tags=integration_test" }
+		}
+	}
+}
+
+require('mini.comment').setup()
+require('mini.diff').setup()
+require('mini.jump').setup()
+require('mini.pairs').setup()
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -77,7 +86,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 -- Telescope
-require('telescope').setup{
+require('telescope').setup {
   defaults = {
     file_ignore_patterns = { "node_modules" },
   },
@@ -90,7 +99,7 @@ require('telescope').setup{
 }
 
 -- CMP
-local cmp = require'cmp'
+local cmp = require 'cmp'
 cmp.setup({
 	window = {
 		-- completion = cmp.config.window.bordered(),

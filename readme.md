@@ -26,6 +26,8 @@
     - Mission control: Control + up/down
     - Add Farsi
     - Remove ^Space for input source change
+- [Disable tiling](https://www.reddit.com/r/MacOSBeta/comments/1e26ljh/comment/lt57o3a/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
+    Start the System Settings.app, select Keyboard on the left, select Keyboard Shortcuts… button, select App Shortcuts on the left, select the "+" button, then Application = All Applications, Menu Title = Top, Keyboard Shortcut = control+option+up or whatever, just something different from fn+control+up (ideally some combination that you will never press in real life). Repeat for "Bottom" "Left" and "Right" shortcut. 
 
 ## Apps
 - Firefox

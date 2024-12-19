@@ -1,7 +1,7 @@
 " Indentation
 " set expandtab " This is not desired for Go
-set shiftwidth=2
-set tabstop=2
+set shiftwidth=4
+set tabstop=4
 
 " Set Space as lead char
 " nnoremap <SPACE> <Nop>
