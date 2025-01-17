@@ -18,6 +18,7 @@ require('packer').startup(function()
 	-- Error window
 	use { 'kevinhwang91/nvim-bqf', ft = 'qf' }
 	-- use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
+	use {'nvim-treesitter/nvim-treesitter'}
 
 	use 'tpope/vim-fugitive'
 	use 'airblade/vim-gitgutter'
@@ -40,6 +41,17 @@ require('packer').startup(function()
 			})
 		end
 	}
+
+	use({
+		'MeanderingProgrammer/render-markdown.nvim',
+		after = { 'nvim-treesitter' },
+		requires = { 'echasnovski/mini.nvim', opt = true }, -- if you use the mini.nvim suite
+		-- requires = { 'echasnovski/mini.icons', opt = true }, -- if you use standalone mini plugins
+		-- requires = { 'nvim-tree/nvim-web-devicons', opt = true }, -- if you prefer nvim-web-devicons
+		config = function()
+			require('render-markdown').setup({})
+		end,
+	})
 
 	use 'echasnovski/mini.nvim'
 
@@ -159,6 +171,7 @@ cmp.setup({
 	}),
 	sources = cmp.config.sources({
 		{ name = 'nvim_lsp' },
+		{ name = 'render-markdown' },
 	}, {
 		-- { name = 'buffer' },
 	})
