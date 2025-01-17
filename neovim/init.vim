@@ -20,13 +20,18 @@ set pastetoggle=<F2>
 
 " Add plugin
 lua require('plugins')
+lua require('user.task').setup()
 
 " NERDTree
-nnoremap <Leader>e :NERDTreeFind<CR>
-map <F5> :NERDTreeToggle<CR>
+" nnoremap <Leader>e :NERDTreeFind<CR>
+" map <F5> :NERDTreeToggle<CR>
+nnoremap <Leader>e :Neotree reveal<CR>
+map <F5> :Neotree reveal<CR>
+
+set diffopt+=context:99999
 
 " Tagbar
-nmap <F8> :TagbarToggle<CR>
+" nmap <F8> :TagbarToggle<CR>
 
 " Make mappings
 nnoremap <leader>mr :!make run<CR>
@@ -53,6 +58,11 @@ nnoremap <Leader>gn :Telescope diagnostics<CR>
 nnoremap <Leader>gw :Telescope lsp_dynamic_workspace_symbols<CR>
 nnoremap <Leader>gic :Telescope lsp_incoming_calls<CR>
 nnoremap <Leader>goc :Telescope lsp_outgoing_calls<CR>
+
+" vim-gitgutter
+" To make it the same as Neo-tree
+" nmap ]g <Plug>(GitGutterNextHunk)
+" nmap [g <Plug>(GitGutterPrevHunk)
 
 " Ag: Only looks at content, not file names
 command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
@@ -106,3 +116,4 @@ autocmd FileType javascript,typescript setlocal foldmethod=syntax " Enable foldi
 
 " Get rid of ~file
 set nobackup
+

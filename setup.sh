@@ -44,6 +44,8 @@ nvim_path=$HOME/.config/nvim
 [[ -d $nvim_path ]] || mkdir -p $nvim_path/lua/
 link_file `pwd`/neovim/init.vim $nvim_path/init.vim
 link_file `pwd`/neovim/plugins.lua $nvim_path/lua/plugins.lua
+mkdir -p $nvim_path/lua/user/
+link_file `pwd`/neovim/user/task.lua $nvim_path/lua/user/task.lua
 
 # LSP Config
 git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/nvim/start/nvim-lspconfig
