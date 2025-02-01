@@ -29,11 +29,6 @@ for rc_file in vimrc zshrc psqlrc gitconfig gitignore_global tmux.conf localrc_s
     link_file `pwd`/$rc_file $HOME/.$rc_file
 done
 
-# Ghostty
-brew install --cask ghostty
-mkdir -p $HOME/.config/ghostty/config
-link_file `pwd`/ghostty $HOME/.config/ghostty/config
-
 # Install my ZSH theme
 theme_dir=$HOME/.oh-my-zsh/custom/themes
 theme_file=$theme_dir/arash.zsh-theme
