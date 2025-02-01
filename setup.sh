@@ -48,9 +48,9 @@ mkdir -p $nvim_path/lua/user/
 link_file `pwd`/neovim/user/task.lua $nvim_path/lua/user/task.lua
 
 # LSP Config
-git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/nvim/start/nvim-lspconfig
-# Install plugins
 if [ ! -d ~/.local/share/nvim/site/pack/packer ]; then
+  git clone https://github.com/neovim/nvim-lspconfig ~/.config/nvim/pack/nvim/start/nvim-lspconfig
+  # Install plugins
   echo "Installing Packer"
   git clone --depth 1 https://github.com/wbthomason/packer.nvim\
      ~/.local/share/nvim/site/pack/packer/start/packer.nvim
