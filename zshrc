@@ -78,7 +78,7 @@ setopt HIST_VERIFY               # Don't execute immediately upon history expans
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker docker-compose colored-man-pages)
+plugins=(git docker docker-compose colored-man-pages zsh-syntax-highlighting)
 
 # User configuration
 
@@ -204,3 +204,7 @@ export PATH="$GOPATH/bin:$PATH"
 q() {
 	llm -s "Answer in as few words as possible. Use a brief style with short replies. Put yourself in the position of an experienced software developer." -m 4o-mini $@
 }
+
+# Enable zoxide
+eval "$(zoxide init zsh)"
+

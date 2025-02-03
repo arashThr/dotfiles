@@ -1,0 +1,38 @@
+---
+- name: Setup Mac machine
+  hosts: local
+  tasks:
+    - name: Ensure required packages are installed
+      community.general.homebrew:
+        name:
+          - git
+          - zsh
+          - zsh
+          - git
+          - tmux
+          - fzf
+          - jq
+          - docker
+          - nvm
+          - libpq
+          - llm
+          - ripgrep
+          - wget
+          - coreutils
+          - fd
+          - rsync
+          - difftastic
+          - zoxide
+        state: latest
+
+    - name: Install Oh My Zsh
+      ansible.builtin.git:
+        repo: https://github.com/ohmyzsh/ohmyzsh.git
+        dest: ~/.oh-my-zsh
+        depth: 1
+
+    - name: Install zsh-syntax-highlighting plugin
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+        dest: ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+        depth: 1
