@@ -39,3 +39,6 @@
 - ChatGPT
     - Enable spell checking
 
+## Ansible
+
+- [Blog post](https://www.lorenzobettini.it/2023/07/my-ansible-role-for-oh-my-zsh-and-other-cli-programs/)

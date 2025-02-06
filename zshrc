@@ -78,7 +78,7 @@ setopt HIST_VERIFY               # Don't execute immediately upon history expans
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker docker-compose colored-man-pages zsh-syntax-highlighting)
+plugins=(git docker docker-compose colored-man-pages zsh-syntax-highlighting zsh-autosuggestions)
 
 # User configuration
 
