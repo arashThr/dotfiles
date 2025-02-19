@@ -3,6 +3,9 @@
   hosts: local
   vars:
     current_user: "{{ ansible_user_id }}"
+    go_version: "1.23.0"
+  roles:
+    - go
   tasks:
     - name: Ensure required packages are installed
       become: true
@@ -17,6 +20,7 @@
           - unzip
           - bat
           - fzf
+          - tree
         state: present
         update_cache: true
 
