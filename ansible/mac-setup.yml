@@ -4,6 +4,8 @@
   tasks:
     - name: Ensure required packages are installed
       community.general.homebrew:
+        update_homebrew: true
+        upgrade_all: true
         name:
           - git
           - zsh
@@ -24,6 +26,11 @@
           - difftastic
           - zoxide
         state: latest
+
+    - name: Install cask
+      community.general.homebrew_cask:
+        name: alt-tab
+        state: present
 
     - name: Install Oh My Zsh
       ansible.builtin.git:
