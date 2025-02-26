@@ -1,4 +1,10 @@
 ---
+- name: check to see if Go compiler is already installed
+  command: "go version"
+  ignore_errors: true
+  register: go_is_installed
+  changed_when: false
+
 - name: Install Go
   become: true
   block:
@@ -42,4 +48,5 @@
         path: ~/.zshrc
         line: 'export PATH="$GOPATH/bin:$PATH"'
         create: true
+  when: go_is_installed.rc != 0
 
