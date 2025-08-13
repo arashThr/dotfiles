@@ -55,18 +55,19 @@ ZSH_THEME="arash"
 # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 # see 'man strftime' for details.
 # HIST_STAMPS="mm/dd/yyyy"
-HISTSIZE=10000000
-SAVEHIST=10000000
+HISTSIZE=100000
+SAVEHIST=200000 # set HISTSIZE > SAVEHIST
 setopt BANG_HIST                 # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
-setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+# setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+setopt INC_APPEND_HISTORY_TIME        # history "will not be available immediately from other instances of the shell that are using the same history file".
 setopt SHARE_HISTORY             # Share history between all sessions.
 setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
 setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
-setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
-setopt HIST_FIND_NO_DUPS         # Do not display a line previously found.
-setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
-setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file.
+# setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
+# setopt HIST_FIND_NO_DUPS         # Do not display a line previously found.
+# setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
+# setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file.
 setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 
@@ -111,14 +112,10 @@ alias ctagpl="ctags -f tags --recurse --totals --exclude=blib --exclude=.svn --e
 alias fixssh='eval $(tmux showenv -s SSH_AUTH_SOCK)'
 
 export ZSH="$HOME/.oh-my-zsh"
-export LESS='-R -j5'
+export LESS='-R -j5 -S'
 source $ZSH/oh-my-zsh.sh
 autoload -U compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Functions
 def() { w3m "https://www.vocabulary.com/dictionary/$1" | tail -n +13 | less }
@@ -200,11 +197,38 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 export GOPATH="$HOME/.go"
 export PATH="$GOPATH/bin:$PATH"
 
+# Enable zoxide
+eval "$(zoxide init zsh)"
+
 ### AI Stuff ###
 q() {
 	llm -s "Answer in as few words as possible. Use a brief style with short replies. Put yourself in the position of an experienced software developer." -m 4o-mini $@
 }
 
-# Enable zoxide
-eval "$(zoxide init zsh)"
+# Core function to append a prompt to git diff and pipe to llm
+_gdllm_core() {
+    local prompt="$1"
+    local diff_output=$(git diff origin/main)
 
+    if [ -n "$diff_output" ]; then
+        echo -e "$prompt\n$diff_output" | llm
+    else
+        echo "No changes in git diff."
+    fi
+}
+
+# Function to append a prompt to git diff output and pipe to llm
+gdllm() {
+    local prompt="${1:-Please review the following git diff and suggest improvements:}"
+    _gdllm_core "$prompt"
+}
+
+prllm() {
+	local prompt="${1:-Give a very short pull request description (less than 50 words) for this git diff with sole focus on the code change. I just want to explain the logic change in the code. Avoid general descriptions. Do not try to predict the effect, because you do not have full context on the change. Put yourself in the position of someone who want to know about what is happening with these changes:\n}"
+	_gdllm_core "$prompt"
+}
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
