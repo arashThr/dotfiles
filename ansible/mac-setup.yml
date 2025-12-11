@@ -25,6 +25,8 @@
           - rsync
           - difftastic
           - zoxide
+          - ispell
+          - gnu-tar
         state: latest
 
     - name: Install cask
