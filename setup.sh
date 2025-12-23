@@ -50,7 +50,7 @@ link_file `pwd`/neovim/user/task.lua $nvim_path/lua/user/task.lua
 # Emacs configs
 emacs_Path=$HOME/.config/emacs
 [[ -d $emacs_path ]] || mkdir -p $emacs_path
-link_file `pwd`/init.el $emacs_path/init.el
+link_file `pwd`/emacs/init.el $emacs_path/init.el
 
 # LSP Config
 if [ ! -d ~/.local/share/nvim/site/pack/packer ]; then
