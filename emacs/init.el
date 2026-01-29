@@ -1,5 +1,60 @@
 ;;; init.el --- Emacs Config: Go + Eglot + Modern Completion
 
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+
+;; From https://blog.sumtypeofway.com/posts/emacs-config.html
+(setq
+ ;; No need to see GNU agitprop.
+ inhibit-startup-screen t
+ ;; No need to remind me what a scratch buffer is.
+ initial-scratch-message nil
+ ;; Double-spaces after periods is morally wrong.
+ sentence-end-double-space nil
+ ;; Never ding at me, ever.
+ ring-bell-function 'ignore
+ ;; Save existing clipboard text into the kill ring before replacing it.
+ save-interprogram-paste-before-kill t
+ ;; Prompts should go in the minibuffer, not in a GUI.
+ use-dialog-box nil
+ ;; Fix undo in commands affecting the mark.
+ mark-even-if-inactive nil
+ ;; Let C-k delete the whole line.
+ kill-whole-line t
+ ;; search should be case-sensitive by default
+ case-fold-search nil
+ ;; no need to prompt for the read command _every_ time
+ compilation-read-command nil
+ ;; scroll to first error
+ compilation-scroll-output 'first-error
+ ;; accept 'y' or 'n' instead of yes/no
+ ;; the documentation advises against setting this variable
+ ;; the documentation can get bent imo
+ use-short-answers t
+ ;; my source directory
+ default-directory "~/Documents/workspace/"
+ ;; eke out a little more scrolling performance
+ fast-but-imprecise-scrolling t
+ ;; prefer newer elisp files
+ load-prefer-newer t
+ ;; when I say to quit, I mean quit
+ confirm-kill-processes nil
+ ;; if native-comp is having trouble, there's not very much I can do
+ native-comp-async-report-warnings-errors 'silent
+ ;; unicode ellipses are better
+ truncate-string-ellipsis "…"
+ )
+
+(set-charset-priority 'unicode)
+(prefer-coding-system 'utf-8-unix)
+
+(global-display-line-numbers-mode t)
+(column-number-mode)
+
+(require 'hl-line)
+(add-hook 'prog-mode-hook #'hl-line-mode)
+(add-hook 'text-mode-hook #'hl-line-mode)
+
 ;; ======================================================
 ;; EXTERNAL DEPENDENCIES (install these first!)
 ;; ======================================================
@@ -114,6 +169,7 @@
 ;; M-f/b: forward/back word
 ;; C-a/e: beginning/end of line
 ;; M-a/e: beginning/end of sentence
+;; M-m: Back to indentation (first char of the line)
 ;; M-</>: beginning/end of buffer
 
 ;; Selection & killing
@@ -143,8 +199,8 @@
 
 ;; Fast jumping with avy
 (use-package avy
-  :bind (("<f2>" . avy-goto-char-in-line)
-         ("M-<f2>" . avy-goto-char-timer)
+  :bind (("M-j" . avy-goto-char-in-line)
+         ("M-J" . avy-goto-char-timer)
          ("M-g l" . avy-goto-line)
          ("M-g w" . avy-goto-word-1)
          ("M-g c" . avy-goto-char)))
@@ -313,6 +369,7 @@
   :hook ((go-mode . eglot-ensure)
          (json-mode . eglot-ensure)
          (js-mode . eglot-ensure)
+	 (c-mode . eglot-ensure)
          (typescript-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure))
   :config
@@ -520,6 +577,10 @@
 ;; Better shell behavior
 (setq shell-command-prompt-show-cwd t)
 
+(use-package verb)
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+
 ;; Tree-sitter (Emacs 29+)
 (when (treesit-available-p)
   ;; Language grammar sources
@@ -547,3 +608,24 @@
 ;; ======================================================
 ;; PACKAGE SYSTEM (auto-generated)
 ;; ======================================================
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(ansible beacon breadcrumb cape copilot corfu-terminal diff-hl docker
+	     doom-themes dracula-theme embark-consult
+	     exec-path-from-shell expand-region go-mode iedit
+	     json-mode kind-icon lsp-treemacs magit marginalia minimap
+	     multiple-cursors nerd-icons-dired orderless
+	     persistent-scratch reformatter standard-themes super-save
+	     tree-sitter-langs treemacs-all-the-icons
+	     treemacs-icons-dired treemacs-nerd-icons typescript-mode
+	     undo-tree verb vertico wgrep yaml-mode)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
