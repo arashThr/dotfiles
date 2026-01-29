@@ -1,0 +1,165 @@
+---
+- name: Setup Linux machine
+  hosts: local
+  become: false
+  vars:
+    current_user: "{{ ansible_user_id }}"
+    go_version: "1.25.0"
+    dotfiles_dir: "{{ playbook_dir | dirname }}"
+    nvm_version: v0.40.3
+    node_version: 24
+  tasks:
+    - name: Enable RPM Fusion repositories
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+          - "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+        state: present
+        disable_gpg_check: true
+
+    - name: Add Microsoft VS Code repository
+      become: true
+      ansible.builtin.yum_repository:
+        name: vscode
+        description: Visual Studio Code
+        baseurl: https://packages.microsoft.com/yumrepos/vscode
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+
+    - name: Add Google Chrome repository
+      become: true
+      ansible.builtin.yum_repository:
+        name: google-chrome
+        description: Google Chrome
+        baseurl: https://dl.google.com/linux/chrome/rpm/stable/x86_64
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://dl.google.com/linux/linux_signing_key.pub
+
+    - name: Add Brave Browser repository
+      become: true
+      ansible.builtin.yum_repository:
+        name: brave-browser
+        description: Brave Browser
+        baseurl: https://brave-browser-rpm-release.s3.brave.com/x86_64/
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+
+    - name: Swap ffmpeg-free with full ffmpeg
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - ffmpeg
+        state: present
+        allowerasing: true
+
+    - name: Ensure required packages are installed
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - git
+          - firewalld
+          - curl
+          - wget
+          - zsh
+          - man-db
+          - ripgrep
+          - unzip
+          - bat
+          - fzf
+          - tree
+          - zoxide
+          - ibm-plex-mono-fonts
+          - tmux
+          - jq
+          - nodejs
+          - docker
+          - firefox
+          - vlc
+          - vim-enhanced
+          - google-chrome-stable
+          - telegram-desktop
+          - code
+          - emacs
+          - brave-browser
+        state: present
+        update_cache: true
+
+    - name: Enable Ghostty Copr repository
+      become: true
+      community.general.copr:
+        name: pgdev/ghostty
+        state: enabled
+
+    - name: Install Ghostty
+      become: true
+      ansible.builtin.dnf:
+        name: ghostty
+        state: present
+
+    - name: Install Oh My Zsh
+      ansible.builtin.git:
+        repo: https://github.com/ohmyzsh/ohmyzsh.git
+        dest: "~/.oh-my-zsh"
+        depth: 1
+
+    - name: Install zsh-syntax-highlighting plugin
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+        dest: "~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+        depth: 1
+
+    - name: Install zsh-autosuggestions plugin
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions
+        dest: "~/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        depth: 1
+
+    - name: Install custom ZSH theme
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/arash.zsh-theme"
+        dest: "~/.oh-my-zsh/custom/themes/arash.zsh-theme"
+        state: link
+      when: dotfiles_dir is defined
+
+    - name: Change user shell to zsh
+      ansible.builtin.user:
+        name: "{{ current_user }}"
+        shell: /bin/zsh
+
+    - name: Link dotfiles
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/{{ item }}"
+        dest: "~/.{{ item }}"
+        state: link
+        follow: false
+        force: true
+      loop:
+        - vimrc
+        - zshrc
+        - psqlrc
+        - gitconfig
+        - gitignore_global
+        - tmux.conf
+        - localrc_sample
+
+    - name: Create SSH config.d directory
+      ansible.builtin.file:
+        path: "~/.ssh/config.d"
+        state: directory
+        mode: "0700"
+
+    - name: Link SSH config
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/ssh-config"
+        dest: "~/.ssh/config"
+        state: link
+        force: true
+
+  roles:
+    - go
+    - node
+    - editor

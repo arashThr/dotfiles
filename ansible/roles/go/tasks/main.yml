@@ -1,18 +1,32 @@
 ---
-- name: check to see if Go compiler is already installed
-  command: "go version"
-  ignore_errors: true
-  register: go_is_installed
+- name: Check if Go is already installed
+  ansible.builtin.stat:
+    path: "{{ go_install_path }}/bin/go"
+  register: go_binary
+
+- name: Get installed Go version
+  ansible.builtin.command:
+    cmd: "{{ go_install_path }}/bin/go version"
+  register: go_version_output
   changed_when: false
+  failed_when: false
+  when: go_binary.stat.exists
+
+- name: Set Go installation needed flag
+  ansible.builtin.set_fact:
+    go_needs_install: >-
+      {{ not go_binary.stat.exists or
+         (go_version_output.stdout is defined and
+          'go' + go_version not in go_version_output.stdout) }}
 
 - name: Install Go
-  become: true
   block:
     - name: Download Go
       ansible.builtin.get_url:
         url: "https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz"
         dest: /tmp/go.tar.gz
         mode: "0644"
+        timeout: 60
 
     - name: Create temp directory for Go
       ansible.builtin.file:
@@ -34,7 +48,7 @@
     - name: Move Go to install path
       ansible.builtin.copy:
         src: /tmp/go_install/go/
-        dest:  "{{ go_install_path }}"
+        dest: "{{ go_install_path }}"
         remote_src: true
         mode: preserve
 
@@ -43,10 +57,14 @@
         path: /tmp/go_install
         state: absent
 
-    - name: Add Go to PATH
-      ansible.builtin.lineinfile:
-        path: ~/.zshrc
-        line: 'export PATH="$GOPATH/bin:$PATH"'
-        create: true
-  when: go_is_installed.rc != 0
+    - name: Clean up downloaded tarball
+      ansible.builtin.file:
+        path: /tmp/go.tar.gz
+        state: absent
+  when: go_needs_install
 
+- name: Ensure GOPATH is set in .zshrc
+  ansible.builtin.lineinfile:
+    path: ~/.zshrc
+    line: 'export PATH="$GOPATH/bin:$PATH"'
+    create: true

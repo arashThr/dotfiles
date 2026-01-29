@@ -22,6 +22,10 @@
           - fzf
           - tree
           - zoxide
+          - tmux
+          - jq
+          - docker
+          - libpq
         state: present
         update_cache: true
 
