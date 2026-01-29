@@ -16,8 +16,6 @@ colorscheme habamax
 set ignorecase
 set smartcase
 
-set pastetoggle=<F2>
-
 " Add plugin
 lua require('plugins')
 lua require('user.task').setup()

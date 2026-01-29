@@ -65,6 +65,7 @@
           - curl
           - wget
           - zsh
+          - fd-find
           - man-db
           - ripgrep
           - unzip
@@ -80,6 +81,7 @@
           - firefox
           - vlc
           - vim-enhanced
+          - neovim
           - google-chrome-stable
           - telegram-desktop
           - code

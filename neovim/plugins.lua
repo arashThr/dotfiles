@@ -27,7 +27,6 @@ require('packer').startup(function()
 	use 'hrsh7th/cmp-cmdline'   -- Command line completion
 
 	use 'vimwiki/vimwiki'
-	use 'ggandor/leap.nvim'          -- Fast jumping
 	use 'mbbill/undotree'             -- Undo tree
 	use 'folke/which-key.nvim'       -- Key hints
 	use 'nvim-lualine/lualine.nvim'  -- Status line
@@ -37,14 +36,19 @@ require('packer').startup(function()
 end)
 
 -- Setup gopls
-local lspconfig = require('lspconfig')
-lspconfig.gopls.setup {
+vim.lsp.enable('gopls')
+vim.lsp.config('gopls', {
 	settings = {
 		gopls = {
-			buildFlags = { "-tags=integration_test" }
+			buildFlags = { "-tags=integration_test" },
+			analyses = {
+				unusedparams = true,
+			},
+		    staticcheck = true,
+		    gofumpt = true,
 		}
 	}
-}
+})
 
 -- LSP keymaps
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
@@ -109,7 +113,6 @@ require('telescope').setup {
 	}
 }
 
-vim.keymap.set({'n', 'x', 'o'}, 's', '<Plug>(leap)')
 vim.keymap.set('n', '<F6>', vim.cmd.UndotreeToggle)
 
 require('lualine').setup {

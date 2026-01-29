@@ -45,7 +45,7 @@ nvim_path=$HOME/.config/nvim
 link_file `pwd`/neovim/init.vim $nvim_path/init.vim
 link_file `pwd`/neovim/plugins.lua $nvim_path/lua/plugins.lua
 mkdir -p $nvim_path/lua/user/
-link_file `pwd`/neovim/user/task.lua $nvim_path/lua/user/task.lua
+link_file `pwd`/neovim/task.lua $nvim_path/lua/user/task.lua
 
 # Emacs configs
 emacs_Path=$HOME/.config/emacs

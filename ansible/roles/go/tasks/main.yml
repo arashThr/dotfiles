@@ -25,14 +25,12 @@
       ansible.builtin.get_url:
         url: "https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz"
         dest: /tmp/go.tar.gz
-        mode: "0644"
         timeout: 60
 
     - name: Create temp directory for Go
       ansible.builtin.file:
         path: /tmp/go_install
         state: directory
-        mode: "0755"
 
     - name: Extract Go to temp directory
       ansible.builtin.unarchive:
@@ -61,6 +59,7 @@
       ansible.builtin.file:
         path: /tmp/go.tar.gz
         state: absent
+        
   when: go_needs_install
 
 - name: Ensure GOPATH is set in .zshrc
@@ -68,3 +67,9 @@
     path: ~/.zshrc
     line: 'export PATH="$GOPATH/bin:$PATH"'
     create: true
+
+- name: Install Gopls
+  ansible.builtin.command: go install golang.org/x/tools/gopls@latest
+  args:
+    creates: "{{ go_install_path }}/bin/gopls"
+

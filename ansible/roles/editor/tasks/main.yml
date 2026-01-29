@@ -13,30 +13,6 @@
     follow: false
     force: true
 
-- name: 'Install Neovim'
-  become: true
-  block:
-    - name: 'Download Neovim'
-      ansible.builtin.get_url:
-        url: 'https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz'
-        dest: '/tmp/nvim-linux-x86_64.tar.gz'
-        mode: '0644'
-    - name: 'Remove existing Neovim installation'
-      ansible.builtin.file:
-        path: '/opt/nvim-linux-x86_64'
-        state: 'absent'
-    - name: 'Extract Neovim'
-      ansible.builtin.unarchive:
-        src: '/tmp/nvim-linux-x86_64.tar.gz'
-        dest: '/opt'
-        remote_src: true
-        creates: '/opt/nvim-linux-x86_64'
-    - name: 'Create symlink to neovim binary'
-      ansible.builtin.file:
-        src: '/opt/nvim-linux-x86_64/bin/nvim'
-        dest: '/usr/local/bin/nvim'
-        state: 'link'
-
 - name: Create Neovim config directories
   become: false
   ansible.builtin.file:
@@ -52,15 +28,14 @@
   become: false
   ansible.builtin.file:
     src: "{{ dotfiles_dir }}/neovim/{{ item.src }}"
-    dest: "{{ item.dest }}"
+    dest: "~/.config/nvim/{{ item.dest }}"
     state: link
     follow: false
     force: true
   loop:
-    - { src: "{{ dotfiles_dir }}/neovim/init.vim", dest: "~/.config/nvim/init.vim" }
-    - { src: "{{ dotfiles_dir }}/neovim/plugins.lua", dest: "~/.config/nvim/lua/plugins.lua" }
-    - { src: "{{ dotfiles_dir }}/neovim/user/task.lua", dest: "~/.config/nvim/lua/user/task.lua" }
-
+    - { src: "init.vim", dest: "init.vim" }
+    - { src: "plugins.lua", dest: "lua/plugins.lua" }
+    - { src: "task.lua", dest: "lua/user/task.lua" }
 - name: Install nvim-lspconfig
   become: false
   ansible.builtin.git:
@@ -68,13 +43,8 @@
     dest: "~/.config/nvim/pack/nvim/start/nvim-lspconfig"
     depth: 1
 
-
 - name: Install Packer for Neovim
   ansible.builtin.git:
     repo: https://github.com/wbthomason/packer.nvim
     dest: "~/.local/share/nvim/site/pack/packer/start/packer.nvim"
     depth: 1
-
-- name: Install Packer plugins
-  ansible.builtin.command:
-    cmd: nvim --headless -c 'PackerInstall' -c 'qa!'

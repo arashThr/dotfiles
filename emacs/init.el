@@ -1,7 +1,23 @@
 ;;; init.el --- Emacs Config: Go + Eglot + Modern Completion
 
+(require 'package) ;; Emacs builtin
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+
+;; initialize built-in package management
+(package-initialize)
+
+;; Bootstrap 'use-package'
+(eval-after-load 'gnutls
+  '(add-to-list 'gnutls-trustfiles "/etc/ssl/cert.pem"))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)
+(setq use-package-always-ensure t)
+
 
 ;; From https://blog.sumtypeofway.com/posts/emacs-config.html
 (setq
@@ -67,6 +83,9 @@
 ;; ======================================================
 ;; BASIC UI & BEHAVIOR
 ;; ======================================================
+
+;; Spacegray theme comes from this package
+(use-package doom-themes)
 
 ;; Clean UI
 (when (display-graphic-p)
@@ -236,10 +255,11 @@
   (setq vertico-cycle t)
   (vertico-mode))
 
-(use-package vertico-directory
-  :after vertico
-  :bind (:map vertico-map
-              ("M-DEL" . vertico-directory-delete-word)))
+; Not in Melpa
+;(use-package vertico-directory
+;  :after vertico
+;  :bind (:map vertico-map
+;              ("M-DEL" . vertico-directory-delete-word)))
 
 ;; Marginalia: show annotations
 (use-package marginalia
@@ -313,10 +333,11 @@
         corfu-auto-delay 0.1
         corfu-auto-prefix 3))
 
-(use-package corfu-terminal
-  :if (not (display-graphic-p))
-  :config
-  (corfu-terminal-mode))
+; Not available in Melpa
+;(use-package corfu-terminal
+;  :if (not (display-graphic-p))
+;  :config
+;  (corfu-terminal-mode))
 
 ;; Cape: completion sources
 (use-package cape
@@ -435,7 +456,7 @@
 ;; ======================================================
 
 (use-package magit
-  :bind ("<f10>" . magit-status))
+  :bind ("C-x g" . magit-status))
 
 ;; Clickable links in magit output
 (add-hook 'magit-process-mode-hook 'goto-address-mode)
@@ -453,8 +474,8 @@
       magit-ediff-dwim-show-on-hunks t)
 
 ;; Custom git sidebar
-(load "~/.config/emacs/git-sidebar.el")
-(global-set-key (kbd "C-c g c") #'my-git-changes-sidebar)
+; (load "~/.config/emacs/git-sidebar.el")
+; (global-set-key (kbd "C-c g c") #'my-git-changes-sidebar)
 
 ;; ======================================================
 ;; FILE TREE
@@ -604,28 +625,3 @@
 ;; Mouse: Cmd+Click = go to definition
 (when (display-graphic-p)
   (global-set-key (kbd "s-<mouse-1>") #'xref-find-definitions))
-
-;; ======================================================
-;; PACKAGE SYSTEM (auto-generated)
-;; ======================================================
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ansible beacon breadcrumb cape copilot corfu-terminal diff-hl docker
-	     doom-themes dracula-theme embark-consult
-	     exec-path-from-shell expand-region go-mode iedit
-	     json-mode kind-icon lsp-treemacs magit marginalia minimap
-	     multiple-cursors nerd-icons-dired orderless
-	     persistent-scratch reformatter standard-themes super-save
-	     tree-sitter-langs treemacs-all-the-icons
-	     treemacs-icons-dired treemacs-nerd-icons typescript-mode
-	     undo-tree verb vertico wgrep yaml-mode)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
