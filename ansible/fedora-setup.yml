@@ -163,6 +163,7 @@
         force: true
 
   roles:
-    # - go
+    - go
     - node
     - editor
+    - font

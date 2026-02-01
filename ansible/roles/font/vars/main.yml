@@ -1,0 +1,4 @@
+---
+font: "0xProtoNerdFont"
+font_download_url: "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/0xProto.zip"
+fonts_dir: "{{ lookup('env', 'HOME') }}/.local/share/fonts"

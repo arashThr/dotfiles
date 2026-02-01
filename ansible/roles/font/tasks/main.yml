@@ -1,0 +1,31 @@
+---
+- name: Ensure fonts directory
+  file:
+    path: "{{ fonts_dir }}"
+    state: directory
+
+- name: Check font exists
+  ansible.builtin.stat:
+    path: "{{ fonts_dir }}/{{ font }}"
+  register: font_exists
+
+- name: Install font
+  when: font_exists.stat.isdir is not defined
+  block:
+  - name: Create directory for {{ font }}
+    ansible.builtin.file:
+      path: "{{ fonts_dir}}/{{ font }}"
+      mode: 0775
+      state: directory
+
+  - name: Download font
+    when: font_exists.stat.isdir is not defined
+    ansible.builtin.unarchive:
+      src: "{{ font_download_url }}"
+      dest: "{{ fonts_dir }}/{{ font }}"
+      remote_src: yes
+
+  - name: Rebuild font cache
+    ansible.builtin.command: fc-cache -f -v "{{ fonts_dir }}"
+    args:
+      warn: false
