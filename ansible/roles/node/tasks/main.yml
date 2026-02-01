@@ -4,11 +4,36 @@
     cmd: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash
     creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
 
-- name: Install global npm packages
+- name: Ensure nvm is available (load nvm)
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+  register: nvm_present
+
+- name: Install Node with nvm
+  ansible.builtin.shell: |
+    set -e
+    . "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+    nvm install {{ node_version }}
+    nvm alias default {{ node_version }}
+  when: nvm_present.stat.exists
+  args:
+    creates: "{{ ansible_env.HOME }}/.nvm/versions/node"
+
+- name: Determine node binary path via nvm
+  ansible.builtin.shell: |
+    . "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+    nvm use {{ node_version }} >/dev/null
+    nvm which node
+  register: nvm_node_path
+  changed_when: false
+
+- name: Ensure npm global packages installed (idempotent) using community.general.npm
   community.general.npm:
     name: "{{ item }}"
     global: true
-    path: "{{ ansible_env.HOME }}/.nvm/versions/node/v24"
+    path: "{{ ansible_env.HOME }}"
+  environment:
+    PATH: "{{ (nvm_node_path.stdout | dirname) }}:{{ ansible_env.PATH }}"
   loop:
     - typescript-language-server
     - typescript

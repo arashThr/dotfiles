@@ -128,6 +128,7 @@
       when: dotfiles_dir is defined
 
     - name: Change user shell to zsh
+      become: true
       ansible.builtin.user:
         name: "{{ current_user }}"
         shell: /bin/zsh
@@ -162,6 +163,6 @@
         force: true
 
   roles:
-    - go
+    # - go
     - node
     - editor
