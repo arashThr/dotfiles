@@ -21,10 +21,8 @@ lua require('plugins')
 lua require('user.task').setup()
 
 " NERDTree
-" nnoremap <Leader>e :NERDTreeFind<CR>
-" map <F5> :NERDTreeToggle<CR>
-nnoremap <Leader>e :Neotree reveal<CR>
-map <F5> :Neotree reveal<CR>
+nnoremap <Leader>e :NERDTreeFind<CR>
+map <F5> :NERDTreeToggle<CR>
 
 set diffopt+=context:99999
 
@@ -114,4 +112,3 @@ autocmd FileType javascript,typescript setlocal foldmethod=syntax " Enable foldi
 
 " Get rid of ~file
 set nobackup
-
