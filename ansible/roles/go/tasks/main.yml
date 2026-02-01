@@ -39,13 +39,11 @@
         remote_src: true
 
     - name: Remove existing Go installation
-      become: true
       ansible.builtin.file:
         path: "{{ go_install_path }}"
         state: absent
 
     - name: Move Go to install path
-      become: true
       ansible.builtin.copy:
         src: /tmp/go_install/go/
         dest: "{{ go_install_path }}"

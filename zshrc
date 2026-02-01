@@ -194,7 +194,7 @@ export PATH="$PATH:$HOME/.gems/bin"
 export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 
-export GOPATH="$HOME/.go"
+export GOPATH="$HOME/.local/share/go"
 export PATH="$GOPATH/bin:$PATH"
 
 # Enable zoxide

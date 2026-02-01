@@ -1,2 +1,2 @@
 ---
-go_install_path: "{{ lookup('env', 'GOPATH') | default('/usr/local/go', true) }}"
+go_install_path: "{{ lookup('env', 'GOPATH') | default('~/.local/share/go', true) }}"

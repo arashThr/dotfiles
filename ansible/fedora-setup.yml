@@ -93,5 +93,11 @@
     - go
     - node
     - editor
-    - font
     - shell
+    - role: font
+      font: "IBMPlexMono"
+      font_download_url: "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/IBMPlexMono.zip"
+    - role: font
+      font: "0xProtoNerdFont"
+      font_download_url: "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/0xProto.zip"
+
