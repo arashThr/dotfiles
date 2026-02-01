@@ -29,16 +29,6 @@ for rc_file in vimrc zshrc psqlrc gitconfig gitignore_global tmux.conf localrc_s
     link_file `pwd`/$rc_file $HOME/.$rc_file
 done
 
-# Install my ZSH theme
-theme_dir=$HOME/.oh-my-zsh/custom/themes
-theme_file=$theme_dir/arash.zsh-theme
-
-if [ -f $theme_dir ]; then
-    echo '.oh-my-zsh directory does not exist. Skipping theme.'
-else
-    [[ -L $theme_file && -e $theme_file ]] || ln -s `pwd`/arash.zsh-theme $theme_file
-fi
-
 # Neovim configs
 nvim_path=$HOME/.config/nvim
 [[ -d $nvim_path ]] || mkdir -p $nvim_path/lua/
@@ -78,11 +68,3 @@ ssh_config=$ssh_dir/config
 [ -L $ssh_config ] && echo "Removing $ssh_config" && rm $ssh_config
 echo "Linking ssh config file at $ssh_config"
 ln -s `pwd`/ssh-config $ssh_config
-
-# NVM
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-nvm install --lts
-
-# JS/TS LSP
-npm install -g typescript-language-server typescript yarn
-
