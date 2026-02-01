@@ -1,5 +1,10 @@
 #!/bin/bash
-# This script creates the RC files and sets up all the requirments for apps to
+
+# INSTALLATION SCRIPT
+# First, run the Ansible playbook to set up the system.
+# Then, run this script to set up user-specific configurations.
+
+# This script creates the RC files and sets up all the requirements for apps to
 # start working properly
 
 set -eu
@@ -38,7 +43,7 @@ mkdir -p $nvim_path/lua/user/
 link_file `pwd`/neovim/task.lua $nvim_path/lua/user/task.lua
 
 # Emacs configs
-emacs_Path=$HOME/.config/emacs
+emacs_path=$HOME/.config/emacs
 [[ -d $emacs_path ]] || mkdir -p $emacs_path
 link_file `pwd`/emacs/init.el $emacs_path/init.el
 
