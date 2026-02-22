@@ -622,6 +622,8 @@
 	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
 	  (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-ts-mode))
+
 ;; Mouse: Cmd+Click = go to definition
 (when (display-graphic-p)
   (global-set-key (kbd "s-<mouse-1>") #'xref-find-definitions))

@@ -92,7 +92,7 @@ plugins=(git docker docker-compose colored-man-pages zsh-syntax-highlighting zsh
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
 # else
-#   export EDITOR='mvim'
+#   export EDITOR='nvim'
 # fi
 
 # Compilation flags
@@ -194,7 +194,8 @@ export PATH="$PATH:$HOME/.gems/bin"
 export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 
-export GOPATH="$HOME/.local/share/go"
+export GOPATH="$HOME/.go"
+export GOROOT="$HOME/.local/share/go"
 export PATH="$GOPATH/bin:$PATH"
 
 # Enable zoxide

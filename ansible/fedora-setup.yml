@@ -76,7 +76,13 @@
           - ibm-plex-mono-fonts
           - tmux
           - jq
-          - nodejs
+	  - kitty
+	  - yt-dlp
+          - aspell
+          - aspell-en
+          # Development
+          - "@c-development" # dnf package group
+          # Desktop apps
           - firefox
           - vlc
           - vim-enhanced

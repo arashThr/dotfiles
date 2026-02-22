@@ -62,10 +62,10 @@
         
   when: go_needs_install
 
-- name: Ensure GOPATH is set in .zshrc
+- name: Ensure GOPATH and GOROOT are set in .zshrc
   ansible.builtin.lineinfile:
     path: ~/.zshrc
-    line: 'export PATH="$GOPATH/bin:$PATH"'
+    line: 'export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"'
     create: true
 
 - name: Install Gopls
