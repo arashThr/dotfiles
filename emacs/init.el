@@ -91,11 +91,11 @@
 (when (display-graphic-p)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (set-face-attribute 'default nil :height 150)
+  (set-face-attribute 'default nil :height 120)
   (set-frame-font "-*-IBM Plex Mono-medium-normal-normal-*-15-*-*-*-m-0-iso10646-1")
   (setq-default line-spacing 4)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (load-theme 'doom-spacegrey t))
+  (load-theme 'doom-nord-light t))
 
 ;; Mouse support in terminal
 (xterm-mouse-mode 1)

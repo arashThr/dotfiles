@@ -89,11 +89,11 @@ plugins=(git docker docker-compose colored-man-pages zsh-syntax-highlighting zsh
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='nvim'
+fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -196,7 +196,7 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 
 export GOPATH="$HOME/.go"
 export GOROOT="$HOME/.local/share/go"
-export PATH="$GOPATH/bin:$PATH"
+export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
 
 # Enable zoxide
 eval "$(zoxide init zsh)"
