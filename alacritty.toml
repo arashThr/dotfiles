@@ -1,0 +1,16 @@
+[window]
+decorations_theme_variant = "Light"
+padding = { x = 5, y = 0 }
+
+[font]
+normal = { family = "JetBrains Mono", style = "Regular" }
+size = 12.0
+
+[general]
+import = [
+    "~/.config/alacritty/themes/themes/papertheme.toml"
+]
+
+[terminal.shell]
+program = "tmux"
+

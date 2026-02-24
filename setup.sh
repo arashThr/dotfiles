@@ -24,7 +24,7 @@ link_file() {
     ln -s $from $to
 }
 
-for rc_file in vimrc zshrc psqlrc gitconfig gitignore_global tmux.conf localrc_sample; do
+for rc_file in vimrc zshrc psqlrc gitconfig gitignore_global tmux.conf; do
     read -p "Replace $rc_file? " -n 1 -r
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -46,6 +46,11 @@ link_file `pwd`/neovim/task.lua $nvim_path/lua/user/task.lua
 emacs_path=$HOME/.config/emacs
 [[ -d $emacs_path ]] || mkdir -p $emacs_path
 link_file `pwd`/emacs/init.el $emacs_path/init.el
+
+# Alacritty
+alac_path=$HOME/.config/alacritty/
+[[ -d $alac_path ]] || mkdir -p $alac_path
+link_file `pwd`/alacritty.toml
 
 # LSP Config
 if [ ! -d ~/.local/share/nvim/site/pack/packer ]; then
@@ -73,3 +78,6 @@ ssh_config=$ssh_dir/config
 [ -L $ssh_config ] && echo "Removing $ssh_config" && rm $ssh_config
 echo "Linking ssh config file at $ssh_config"
 ln -s `pwd`/ssh-config $ssh_config
+
+# Create local.rc file for local changes
+touch ~/.localrc
