@@ -64,7 +64,6 @@
 (set-charset-priority 'unicode)
 (prefer-coding-system 'utf-8-unix)
 
-(global-display-line-numbers-mode t)
 (column-number-mode)
 
 (require 'hl-line)
@@ -319,9 +318,12 @@
   "Show project buffers if in project, else all buffers."
   (interactive)
   (call-interactively
-   (if (project-current)
-       'consult-project-buffer
-     'consult-buffer)))
+   ;; Actually, I don't use project buffer very much
+   ;; (if (project-current)
+   ;;     'consult-project-buffer
+   ;;   'consult-buffer)
+   'consult-buffer
+   ))
 (global-set-key (kbd "C-<return>") #'my/smart-jump)
 
 ;; Corfu: popup completion (like VS Code)
@@ -551,12 +553,7 @@
       org-hide-leading-stars t
       org-log-done 'time)  ; Timestamp on TODO completion
 
-(global-set-key (kbd "C-c o a") #'org-agenda)
-(global-set-key (kbd "C-c o c") #'org-capture)
-
-(setq org-capture-templates
-      '(("t" "Todo" entry (file "~/todo.org")
-         "* TODO %?\n  SCHEDULED: %t\n" :prepend t)))
+(global-set-key (kbd "C-c a") #'org-agenda)
 
 ;; ======================================================
 ;; COPILOT
@@ -601,6 +598,14 @@
 (use-package verb)
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+
+;; Markdown mode
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (define-key markdown-mode-map (kbd "M-<up>") 'markdown-move-up)
+	    (define-key markdown-mode-map (kbd "M-<down>") 'markdown-move-down)
+	    (setq indent-tabs-mode nil)
+	    (setq tab-width 2)))
 
 ;; Tree-sitter (Emacs 29+)
 (when (treesit-available-p)
