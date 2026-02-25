@@ -2,7 +2,7 @@
 
 (require 'package) ;; Emacs builtin
 (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+	     '("melpa" . "https://melpa.org/packages/") t)
 
 ;; initialize built-in package management
 (package-initialize)
