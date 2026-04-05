@@ -76,8 +76,8 @@
           - ibm-plex-mono-fonts
           - tmux
           - jq
-	  - kitty
-	  - yt-dlp
+          - kitty
+          - yt-dlp
           - aspell
           - aspell-en
           # Development
