@@ -43,6 +43,12 @@
         path: "{{ go_install_path }}"
         state: absent
 
+    - name: Ensure Go install directory exists
+      ansible.builtin.file:
+        path: "{{ go_install_path }}"
+        state: directory
+        mode: '0755'
+
     - name: Move Go to install path
       ansible.builtin.copy:
         src: /tmp/go_install/go/
@@ -59,7 +65,7 @@
       ansible.builtin.file:
         path: /tmp/go.tar.gz
         state: absent
-        
+
   when: go_needs_install
 
 - name: Ensure GOPATH and GOROOT are set in .zshrc
