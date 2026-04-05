@@ -1,5 +1,34 @@
 ---
-- name: Add Docker repository
+# Debian/Ubuntu
+- name: Add Docker GPG key (Debian)
+  become: true
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Add Docker repository (Debian)
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install Docker packages (Debian)
+  become: true
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: latest
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+# Fedora/RHEL
+- name: Add Docker repository (Fedora)
   become: true
   ansible.builtin.yum_repository:
     name: docker-ce
@@ -8,8 +37,9 @@
     enabled: true
     gpgcheck: true
     gpgkey: https://download.docker.com/linux/fedora/gpg
+  when: ansible_os_family == "RedHat"
 
-- name: Install Docker packages
+- name: Install Docker packages (Fedora)
   become: true
   ansible.builtin.dnf:
     name:
@@ -20,7 +50,9 @@
       - docker-compose-plugin
     state: latest
     update_cache: true
+  when: ansible_os_family == "RedHat"
 
+# Common
 - name: Enable and start Docker service
   become: true
   ansible.builtin.systemd:
