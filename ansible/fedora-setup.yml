@@ -110,20 +110,6 @@
         - gitignore_global
         - tmux.conf
 
-    - name: Create Alacritty config directory
-      ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.config/alacritty"
-        state: directory
-        mode: "0755"
-
-    - name: Link Alacritty config
-      ansible.builtin.file:
-        src: "{{ dotfiles_dir }}/alacritty.toml"
-        dest: "{{ ansible_env.HOME }}/.config/alacritty/alacritty.toml"
-        state: link
-        follow: false
-        force: true
-
     - name: Create SSH config.d directory
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.ssh/config.d"

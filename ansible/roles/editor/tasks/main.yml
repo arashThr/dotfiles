@@ -48,3 +48,17 @@
     repo: https://github.com/wbthomason/packer.nvim
     dest: "~/.local/share/nvim/site/pack/packer/start/packer.nvim"
     depth: 1
+
+- name: Create Alacritty config directory
+  ansible.builtin.file:
+    path: "~/.config/alacritty"
+    state: directory
+    mode: "0755"
+
+- name: Link Alacritty config
+  ansible.builtin.file:
+    src: "{{ dotfiles_dir }}/alacritty.toml"
+    dest: "~/.config/alacritty/alacritty.toml"
+    state: link
+    follow: false
+    force: true
