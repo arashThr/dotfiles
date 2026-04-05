@@ -95,6 +95,56 @@
         state: present
         update_cache: true
 
+    - name: Link RC files to home directory
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/{{ item }}"
+        dest: "{{ ansible_env.HOME }}/.{{ item }}"
+        state: link
+        follow: false
+        force: true
+      loop:
+        - vimrc
+        - zshrc
+        - psqlrc
+        - gitconfig
+        - gitignore_global
+        - tmux.conf
+
+    - name: Create Alacritty config directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.config/alacritty"
+        state: directory
+        mode: "0755"
+
+    - name: Link Alacritty config
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/alacritty.toml"
+        dest: "{{ ansible_env.HOME }}/.config/alacritty/alacritty.toml"
+        state: link
+        follow: false
+        force: true
+
+    - name: Create SSH config.d directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.ssh/config.d"
+        state: directory
+        mode: "0700"
+
+    - name: Link SSH config
+      ansible.builtin.file:
+        src: "{{ dotfiles_dir }}/ssh-config"
+        dest: "{{ ansible_env.HOME }}/.ssh/config"
+        state: link
+        follow: false
+        force: true
+
+    - name: Create local RC file
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.localrc"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+
   roles:
     - docker
     - go
