@@ -195,8 +195,9 @@ export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 
 export GOPATH="$HOME/.go"
-export GOROOT="$HOME/.local/share/go"
-export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
+export PATH="$GOPATH/bin:$PATH"
+# export GOROOT="$HOME/.local/share/go"
+# export PATH="$GOROOT/bin:$PATH"
 
 # Enable zoxide
 eval "$(zoxide init zsh)"

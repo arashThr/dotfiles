@@ -80,6 +80,7 @@
           - yt-dlp
           - aspell
           - aspell-en
+          - rclone
           # Development
           - "@c-development" # dnf package group
           # Desktop apps
