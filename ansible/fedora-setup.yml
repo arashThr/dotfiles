@@ -75,6 +75,7 @@
           - zoxide
           - ibm-plex-mono-fonts
           - tmux
+          - hugo
           - jq
           - kitty
           - yt-dlp
