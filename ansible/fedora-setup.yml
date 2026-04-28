@@ -80,6 +80,7 @@
           - kitty
           - yt-dlp
           - aspell
+          - difftastic
           - aspell-en
           - rclone
           # Development

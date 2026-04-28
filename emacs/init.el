@@ -1,9 +1,10 @@
 ;;; init.el --- Emacs Config: Go + Eglot + Modern Completion
 
 (require 'package) ;; Emacs builtin
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/") t)
-
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; and `package-pinned-packages`. Most users will not need or want to do this.
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 ;; initialize built-in package management
 (package-initialize)
 
@@ -66,9 +67,9 @@
 
 (column-number-mode)
 
-(require 'hl-line)
-(add-hook 'prog-mode-hook #'hl-line-mode)
-(add-hook 'text-mode-hook #'hl-line-mode)
+;; (require 'hl-line)
+;; (add-hook 'prog-mode-hook #'hl-line-mode)
+;; (add-hook 'text-mode-hook #'hl-line-mode)
 
 ;; ======================================================
 ;; EXTERNAL DEPENDENCIES (install these first!)
@@ -123,8 +124,8 @@
 ;; Better defaults
 (delete-selection-mode 1)          ; Typing replaces selection
 (global-auto-revert-mode 1)        ; Auto-reload changed files
-(recentf-mode 1)                   ; Track recent files
-(setq recentf-max-saved-items 200)
+;; (recentf-mode 1)                   ; Track recent files
+;; (setq recentf-max-saved-items 200)
 
 ;; ======================================================
 ;; FILE MANAGEMENT
@@ -150,6 +151,10 @@
         super-save-exclude '(".gpg"))
   (add-to-list 'super-save-triggers 'consult-buffer)
   (add-to-list 'super-save-triggers 'magit-status))
+
+(use-package persistent-scratch
+  :config
+  (persistent-scratch-setup-default))
 
 ;; ======================================================
 ;; INDENTATION & FORMATTING
@@ -268,7 +273,7 @@
 ;; Orderless: flexible matching (space-separated terms)
 (use-package orderless
   :config
-  (setq completion-styles '(orderless)))
+  (setq completion-styles '(orderless basic)))
 
 ;; Consult: enhanced search/navigation
 (use-package consult
@@ -276,12 +281,12 @@
          ("C-x b" . consult-buffer)
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x p b" . consult-project-buffer)
-         ("C-x C-r" . consult-recent-file)
+         ;; ("C-x C-r" . consult-recent-file)
          
          ;; Search
          ("M-s l" . consult-line)           ; Search current buffer
          ("M-s L" . consult-line-multi)     ; Search all buffers
-         ("M-s d" . consult-fd)             ; Find file by name
+         ("M-s p" . consult-fd)             ; Find file by name
          ("M-s g" . consult-grep)           ; Grep in directory
          ("M-s r" . consult-ripgrep)        ; Ripgrep (faster)
          
@@ -304,7 +309,7 @@
   :config
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
-  
+  (setq consult-fd-args '("fd" "--hidden" "--exclude" ".git" "--color=never" "-i" "-t" "f"))
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
@@ -354,6 +359,12 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
+;; Show keybinding help
+(use-package which-key
+  :init (which-key-mode)
+  :config
+  (setq which-key-idle-delay 0.5))
+
 ;; Embark: context actions (like right-click menu)
 (use-package embark
   :bind (("C-." . embark-act)
@@ -386,7 +397,8 @@
 (defun my-eglot-format-and-organize ()
   "Format buffer on save."
   (when (eglot-managed-p)
-    (eglot-format-buffer)))
+    (eglot-format-buffer)
+    (eglot-code-action-organize-imports)))
 
 (use-package eglot
   :hook ((go-mode . eglot-ensure)
@@ -556,6 +568,10 @@
 
 (global-set-key (kbd "C-c a") #'org-agenda)
 
+;; Todo
+(require 'todo-mode)
+(bind-key "<f12>" 'todo-show)
+
 ;; ======================================================
 ;; COPILOT
 ;; ======================================================
@@ -577,12 +593,6 @@
 ;; MISCELLANEOUS
 ;; ======================================================
 
-;; Show keybinding help
-(use-package which-key
-  :init (which-key-mode)
-  :config
-  (setq which-key-idle-delay 0.5))
-
 ;; Shell in F1
 (global-set-key (kbd "<f1>") #'shell)
 
@@ -601,12 +611,36 @@
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
 
 ;; Markdown mode
-(add-hook 'markdown-mode-hook
+(use-package markdown-mode
+  :hook (markdown-mode . (lambda ()
+                           (setq indent-tabs-mode nil
+                                 tab-width 2)))
+  :bind (:map markdown-mode-map
+              ("M-<up>"   . markdown-move-up)
+              ("M-<down>" . markdown-move-down)))
+
+;; Better ibuffer
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer)
+  :config
+  (setq ibuffer-saved-filter-groups
+        '(("default"
+           ("SSH" (filename . "/ssh:"))
+           ("TRAMP" (filename . "/sudo:\\|/ssh:"))
+           ("Org" (mode . org-mode))
+           ("Programming" (or
+                           (mode . python-mode)
+                           (mode . go-mode)
+                           (mode . emacs-lisp-mode)))
+           ("Dired" (mode . dired-mode))
+           ("Emacs" (or
+                     (name . "^\\*scratch\\*$")
+                     (name . "^\\*Messages\\*$")))))))
+
+(add-hook 'ibuffer-mode-hook
           (lambda ()
-            (define-key markdown-mode-map (kbd "M-<up>") 'markdown-move-up)
-	    (define-key markdown-mode-map (kbd "M-<down>") 'markdown-move-down)
-	    (setq indent-tabs-mode nil)
-	    (setq tab-width 2)))
+            (ibuffer-switch-to-saved-filter-groups "default")))
+
 
 ;; Tree-sitter (Emacs 29+)
 (when (treesit-available-p)
@@ -629,6 +663,7 @@
 	  (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 
 ;; Mouse: Cmd+Click = go to definition
 (when (display-graphic-p)
