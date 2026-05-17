@@ -10,6 +10,15 @@ Append a short note after each step. Format:
 
 ---
 
+## Step 11 — Polish (v0.1.0) — 2026-05-17
+- `brain doctor` extended: checks `~/notes/.brain/index.db` (suggests `brain index --rebuild` if missing), opens DB + runs `Stats()` to verify FTS5, reports last digest commit from `git log`, reports tag-similarity warnings (Levenshtein ≤ 2, frequency ≥ 3) across all journal files.
+- Added `levenshtein()` + `minInt()` helpers and `doctorTagRe` in `internal/cli/doctor.go`; new imports: `regexp`, `sort`, `internal/index`.
+- `brain --help` / `brain -h` / `brain help` all show a full command table and exit 0; per-subcommand `--help` now exits 0 (was exiting 1 via unhandled `flag.ErrHelp`). Added `flag` import to `cmd/brain/main.go`.
+- `brain.el`: modeline updated `[brain⚙]` → `[brain⏳]`; added `brain-show-last-digest` command (finds latest `brain/digest-*` branch via `git log --all --format=%D`, opens `magit-diff-range "main..<branch>"`); bound to `C-c b l`.
+- `Makefile`: new `check` target runs gofmt (fail on output), `go vet`, staticcheck (non-fatal on toolchain mismatch), `go test ./...`.
+- `README.md` rewritten: install, Emacs setup, config, daily workflow, all commands table, troubleshooting with exit codes, architecture diagram.
+- Committed `b2848ac` "chore: v0.1.0 polish"; tagged `v0.1.0`.
+
 ## Step 10 — Auto page-split with cooldown — 2026-05-17
 - New `config.DigestConfig` struct (`AutoSplitEnabled`, `SplitMinTokens`, `SplitCooldownDays`) + `DefaultDigestConfig()` added to `internal/config`.
 - `BuildPlan` signature extended with `cfg config.DigestConfig`; all call sites updated.
