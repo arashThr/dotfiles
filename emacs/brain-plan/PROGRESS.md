@@ -10,6 +10,65 @@ Append a short note after each step. Format:
 
 ---
 
+## Step 10 — Auto page-split with cooldown — 2026-05-17
+- New `config.DigestConfig` struct (`AutoSplitEnabled`, `SplitMinTokens`, `SplitCooldownDays`) + `DefaultDigestConfig()` added to `internal/config`.
+- `BuildPlan` signature extended with `cfg config.DigestConfig`; all call sites updated.
+- `processGroup` now returns `[]Patch` (previously single `Patch`) to accommodate parent+children output.
+- Split heuristic (`splitHeuristic`): fires when `auto_split_enabled=true`, post-append token count (char/4) exceeds `split_min_tokens`, and `last_split` in frontmatter is absent or older than `split_cooldown_days`.
+- `parseFrontmatterLastSplit` / `injectLastSplit`: minimal YAML frontmatter string helpers; no external dep.
+- `executeSplit`: renders `digest_split.tmpl` → calls `lc.ChatJSON` → validates ≥2 children with >300 tokens each → returns `[SPLIT parent] + [CREATE child…]` patches. Falls back (logged to stderr) to APPEND on validation failure.
+- Parent patch: `DecisionSplit`, content is a fresh index page with `last_split:` injected. Children written at `<parent_dir>/<parent_slug>/<child_slug>.md`.
+- New template `internal/prompts/templates/digest_split.tmpl` instructs LLM to output JSON `{parent, children[]}`.
+- `cli/digest.go`: passes `config.DefaultDigestConfig()` to `BuildPlan`.
+- Tests (7 new, 11 updated): `TestSplitHeuristic_UnderThreshold`, `OverButCooldown`, `OverPastCooldown`, `DisabledFlag`; `TestExecuteSplit_ValidationFallback`, `WritesParentAndChildren`; `TestBuildPlan_AutoSplit` (integration: fat file on disk → heuristic fires → 3 patches). All 17 digest tests pass; full suite green.
+
+## Step 09 — brain ask (RAG Q&A) — 2026-05-17
+- New package `internal/ask`: `ChunkRef`, `Citation`, `Answer` types; `Ask(ctx, q, idx, lc, topK, tagFilter)` runs the full RAG pipeline.
+- Pipeline: over-fetch (topK×3 or 20, whichever is larger) from `idx.Search` → recency re-rank (0.85 BM25 relevance + 0.15 file_mtime recency, each normalised to [0,1]) → take top-k → render `ask.tmpl` → `lc.Chat` → parse `[#N]` citations from response.
+- `buildAnswer` deduplicates `[#N]` references and maps them back to `index.Hit`; out-of-range/invalid refs are silently dropped.
+- `excerpt(s, n)` trims to word boundary and appends `…`.
+- `internal/index.Hit` gained `FileMTime int64` field; `Search` query updated to `SELECT ... c.file_mtime` and scan updated to 7 variables.
+- New prompt template `internal/prompts/templates/ask.tmpl` instructs the LLM to cite `[#N]` inline or reply `INSUFFICIENT: <what's missing>`.
+- `InsufficientPrefix` constant exported for callers.
+- `internal/cli/ask.go`: `brain ask [--json] [--k N] [--tag TAG] <question>`. Human-readable output prints text + footnote-style citations; `--json` emits `Answer` JSON.
+- `cmd/brain/main.go`: `ask` case added; usage string updated.
+- `emacs/brain.el`:
+  - `brain-ask` rewritten: collects JSON to a scratch buffer (` *brain-ask-raw*`), kills it on finish, calls `brain--ask-render`.
+  - `brain--ask-render`: parses JSON with `json-parse-string` (Emacs 29 built-in), renders **Q:** header + answer text + Citations section with clickable file buttons; falls back to raw dump on parse error.
+  - `brain--insert-citation-button`: creates a `find-file` button relative to `brain-notes-directory`.
+  - `brain--buttonize-citation-refs`: post-processes buffer after `markdown-mode`, replaces `[#N]` spans with buttons that jump to the `**[#N]**` footnote.
+- Tests (11 in `internal/ask`): `buildAnswer` citation extraction/dedup/invalid-ref/INSUFFICIENT; `excerpt` short/truncate; `rerank` top-k/empty/k-larger-than-hits; integration `TestAsk_CitationsFromMockLLM` (httptest mock, real SQLite, asserts citations populated); `TestAsk_InsufficientWhenNoRelevantChunks` (empty index). All pass.
+- Test query uses `"tri-color mark-and-sweep"` (literal in content) rather than "go garbage collection" to avoid porter-stemmer uncertainty on "collector" vs "collection".
+
+## Step 08 — Digest apply (staging branch) — 2026-05-17
+- New package `internal/gitops`: thin `os/exec` wrapper around git. Exports `EnsureClean`, `CurrentBranch`, `DefaultBranch`, `Checkout`, `CommitAll`, `ReturnTo`, `AcquireLock`.
+- `AcquireLock` uses `syscall.Flock(LOCK_EX|LOCK_NB)` — non-blocking; lock auto-released by OS on process exit (handles crashes without stale lock files).
+- `DefaultBranch` prefers "main" over "master"; falls back to "main" if neither found.
+- Apply flow in `cli/digest.go` (`applyPlan`): lock → EnsureClean → CurrentBranch → Checkout (`brain/digest-YYYY-MM-DD-HHMMSS`) → write files → CommitAll → re-index (non-fatal) → ReturnTo. Named return `retErr` drives deferred rollback.
+- `--dry-run` default changed from `true` to `false`; `brain digest` now applies by default.
+- `ExitError{Code, Message}` in `internal/cli` carries specific exit codes: 11 lock held, 12 dirty tree, 13 LLM error, 14 git error. `main.go` uses `errors.As` to propagate them.
+- Commit message format: `digest: YYYY-MM-DD (N patches)\n- DECISION path: reason`.
+- Output last line `BRANCH=<name>` for `brain.el` to capture.
+- `brain.el` updates:
+  - `brain--capture-branch`: scans process buffer for `^BRANCH=(.+)$`.
+  - `brain--digest-sentinel` (renamed param from `_proc` to `proc`): on success calls `magit-diff-range "main..<branch>"` when branch captured and Magit available; falls back to `magit-status` otherwise.
+  - Removed duplicate `(provide 'brain)` / footer that had accumulated from step 04.
+- Tests (10 in `gitops`): `CurrentBranch`, `EnsureClean` clean/dirty, `DefaultBranch`, `Checkout` create/nonexistent, `CommitAll`, `ReturnTo`, `AcquireLock` exclusive, `ApplyRollbackOnError`. All pass; build/vet/gofmt clean.
+
+## Step 07 — Digest planner (dry-run only) — 2026-05-17
+- New package `internal/digest`: `Decision`, `Patch`, `Plan` types + `BuildPlan(ctx, *parse.Journal, *index.Index, *llm.Client) (*Plan, error)`.
+- Tag-cluster algorithm: count tag-prefix frequencies across all items; tags in >70% of items are "trivial/dominant"; each item's cluster key = most-specific non-trivial tag (depth by colon-count), falling back to first trivial tag or "other".
+- FTS index used for candidate retrieval (top-5 files by summed BM25 score); graceful no-op when index is empty or query produces no hits.
+- Decision call uses `ChatJSON` + `digest_decide.tmpl` (strict JSON schema: `{decision, target_path, reason}`).
+- Content call uses `Chat` + `digest_content.tmpl`; response extracted from fenced code block (`\`\`\`md`, `\`\`\`markdown`, `\`\`\``, `~~~md`, `~~~`).
+- SPLIT decision deferred: treated as APPEND with `WouldSplit: true` flag surfaced in both JSON output and human-readable plan.
+- Concurrency: semaphore of 2 goroutines; context cancellation handled before acquiring semaphore.
+- `internal/cli/digest.go`: `brain digest [--date YYYY-MM-DD] [--dry-run] [--json]`; default date = yesterday.
+- Prompts registered in `internal/prompts/templates/`; automatically embedded and copied to user prompts dir.
+- `cmd/brain/main.go`: `digest` subcommand added.
+- Tests (11): cluster-by-tag, empty/all-trivial/no-tag cluster, extract-fenced-markdown (7 subtests: backtick/tilde/bare/no fence), lineRange, BuildPlan mock (CREATE, SKIP, SPLIT→APPEND), empty journal. All pass; `go vet` and `gofmt` clean.
+- E2E test gated `BRAIN_E2E=1`.
+
 ## Step 06 — SQLite FTS5 wiki index — 2026-05-17
 - **Scope change vs original prompt:** dropped sqlite-vec / embeddings; replaced with SQLite FTS5 (BM25). Rationale documented in revised `steps/06-index.prompt.md` under "Why not embeddings (yet)". Tags + small curated corpus + lexical FTS cover the directed-Q&A use case without CGO or an Ollama embedding dependency on every index run. Schema is forward-compatible if a `vec_chunks` table is layered on later.
 - Dep: `modernc.org/sqlite` v1.50.1 (pure-Go, ships with FTS5). Required `go 1.25.0` (bumped from 1.22).
@@ -27,7 +86,7 @@ Append a short note after each step. Format:
 - E2E verified per prompt's verify block against a temp `$HOME/notes/wiki/...`: rebuild → 1 file/2 chunks; second run unchanged; touched mtime re-indexes with same chunk count; `--search "tri-color"` returns the Tri-color chunk.
 - Reused tag regex inline in `chunk.go` rather than exporting from `internal/parse` to keep packages decoupled. If a third consumer appears, lift it into a shared `internal/tags` package.
 
-
+## Step 05 — Ollama client and prompt template loader — 2026-05-16
 - `config.Ollama` (`Host`, `TimeoutSeconds`) + `config.Models` (`Curator`, `Embedder`) structs; `DefaultOllama()` → `http://127.0.0.1:11434`, 600 s; `DefaultModels()` → `gemma4:26b` / `nomic-embed-text`
 - TOML parsing deferred — config structs use hardcoded defaults for now; will revisit when a step needs to read/mutate the file
 - `internal/llm`: `Client` with `Chat`, `ChatJSON` (format:"json" + JSON decode), `Embed`; `post` retries up to 3× with exponential backoff (1 s, 2 s) on 5xx/connection errors; no retry on 4xx; `sleep` field injectable for fast tests; slog debug logging gated by `BRAIN_DEBUG=1`
