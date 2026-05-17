@@ -10,7 +10,24 @@ Append a short note after each step. Format:
 
 ---
 
-## Step 05 — Ollama client and prompt template loader — 2026-05-16
+## Step 06 — SQLite FTS5 wiki index — 2026-05-17
+- **Scope change vs original prompt:** dropped sqlite-vec / embeddings; replaced with SQLite FTS5 (BM25). Rationale documented in revised `steps/06-index.prompt.md` under "Why not embeddings (yet)". Tags + small curated corpus + lexical FTS cover the directed-Q&A use case without CGO or an Ollama embedding dependency on every index run. Schema is forward-compatible if a `vec_chunks` table is layered on later.
+- Dep: `modernc.org/sqlite` v1.50.1 (pure-Go, ships with FTS5). Required `go 1.25.0` (bumped from 1.22).
+- `internal/index`:
+  - `Open(path)` creates `chunks` table + `chunks_fts` (`content='chunks'`, `tokenize='porter unicode61'`) + triggers (`chunks_ai`, `chunks_ad`) that keep FTS in sync on INSERT/DELETE.
+  - `IndexFile`: delete-then-insert within a tx; `chunk_hash` UNIQUE (sha256 of file+heading_path+content).
+  - `IndexAll(root)`: walks `.md` under root; skips files whose mtime matches the max recorded mtime for that file; calls `pruneMissing` to drop rows for deleted files.
+  - `Search(ctx, q, k, tagFilter)`: FTS5 MATCH ordered by `bm25(chunks_fts)`; over-fetches when filtering and post-filters tags in Go (corpus is small).
+  - `Rebuild`: drops triggers + tables, re-applies schema.
+- `internal/index/chunk.go`: ATX heading split (H1/H2/H3 own a section; H4+ flow into current). Frontmatter stripped; supports flow (`[a, b]`) and block list tags. Oversized sections (>2000 chars) paragraph-split with ~200-char tail overlap.
+- **FTS5 query sanitization:** `sanitizeFTS` quotes each whitespace-separated token so user input like `tri-color` isn't parsed as `tri NOT color`. Caught by `TestIndexRoundTrip` on first run.
+- CLI: `brain index [--rebuild] [--stats] [--file PATH] [--search Q] [--limit N]`. Stats and search emit JSON on stdout. `--search` is a debug helper; the real `ask` flow lands in step 09.
+- `cmd/brain/main.go` updated dispatch + usage line.
+- Tests (7): heading split, hash stability, oversize split, FTS round-trip + tag filter, incremental skip (touched mtime, no churn), rebuild clears, prune missing files. All pass; `go vet` and `gofmt` clean.
+- E2E verified per prompt's verify block against a temp `$HOME/notes/wiki/...`: rebuild → 1 file/2 chunks; second run unchanged; touched mtime re-indexes with same chunk count; `--search "tri-color"` returns the Tri-color chunk.
+- Reused tag regex inline in `chunk.go` rather than exporting from `internal/parse` to keep packages decoupled. If a third consumer appears, lift it into a shared `internal/tags` package.
+
+
 - `config.Ollama` (`Host`, `TimeoutSeconds`) + `config.Models` (`Curator`, `Embedder`) structs; `DefaultOllama()` → `http://127.0.0.1:11434`, 600 s; `DefaultModels()` → `gemma4:26b` / `nomic-embed-text`
 - TOML parsing deferred — config structs use hardcoded defaults for now; will revisit when a step needs to read/mutate the file
 - `internal/llm`: `Client` with `Chat`, `ChatJSON` (format:"json" + JSON decode), `Embed`; `post` retries up to 3× with exponential backoff (1 s, 2 s) on 5xx/connection errors; no retry on 4xx; `sleep` field injectable for fast tests; slog debug logging gated by `BRAIN_DEBUG=1`
