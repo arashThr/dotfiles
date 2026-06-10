@@ -3,6 +3,7 @@
 
 \pset null '¤'
 
+\set PROMPT1 '%n@%/ %R%# '
 -- SELECT * FROM<enter>. %R shows what type of input it expects.
 \set PROMPT2 '... > '
 
