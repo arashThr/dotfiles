@@ -393,6 +393,7 @@
          (json-mode . eglot-ensure)
          (js-mode . eglot-ensure)
 	 (c-mode . eglot-ensure)
+	 (python-mode . eglot-ensure)
          (typescript-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure))
   :config
