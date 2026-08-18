@@ -91,11 +91,12 @@
 (when (display-graphic-p)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (set-face-attribute 'default nil :height 120)
-  (set-frame-font "-*-IBM Plex Mono-medium-normal-normal-*-15-*-*-*-m-0-iso10646-1")
-  (setq-default line-spacing 4)
+  (set-face-attribute 'default nil :height 140)
+  ;; (set-frame-font "-*-IBM Plex Mono-normal-normal-normal-*-15-*-*-*-m-0-iso10646-1")
+  (set-frame-font "-*-JetBrains Mono-normal-normal-normal-*-15-*-*-*-m-0-iso10646-1")
+  (setq-default line-spacing 6)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (load-theme 'doom-nord-light t))
+  (load-theme 'doom-material t))
 
 ;; Mouse support in terminal
 (xterm-mouse-mode 1)
@@ -406,6 +407,8 @@
          (js-mode . eglot-ensure)
 	 (c-mode . eglot-ensure)
 	 (python-mode . eglot-ensure)
+	 (c++-mode-hook . eglot-ensure)
+	 (c-or-c++-mode-hook . eglot-ensure)
          (typescript-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure))
   :config
@@ -579,6 +582,8 @@
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
             :branch "main")
+  :ensure t
+  :hook (prog-mode . copilot-mode)
   :bind (:map copilot-mode-map
               ("C-c c \\" . copilot-complete)
               ("C-c c n" . copilot-next-completion)
@@ -614,7 +619,8 @@
 (use-package markdown-mode
   :hook (markdown-mode . (lambda ()
                            (setq indent-tabs-mode nil
-                                 tab-width 2)))
+                                 tab-width 2
+				 turn-on-gfm-multimarkdown-mode)))
   :bind (:map markdown-mode-map
               ("M-<up>"   . markdown-move-up)
               ("M-<down>" . markdown-move-down)))
