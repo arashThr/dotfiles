@@ -30,6 +30,11 @@
 (require 'bind-key)
 (setq use-package-always-ensure t)
 
+;; Set Custom output file to keep this file intact when install packages manually
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;; ======================================================
 ;; 2. CORE SETTINGS & SANE DEFAULTS
 ;; ======================================================
@@ -167,6 +172,19 @@
 (use-package nerd-icons-dired
   :hook (dired-mode . nerd-icons-dired-mode))
 
+;; dired
+(use-package dired
+  :ensure nil
+  :bind (:map dired-mode-map ("C-c C-r" . dired-do-rename))
+  :config
+  (setq dired-dwim-target t              ;; split window = default copy/move target
+        dired-recursive-copies 'always
+        dired-recursive-deletes 'always
+        delete-by-moving-to-trash t      ;; D and x go to trash, not oblivion
+        dired-listing-switches "-alh --group-directories-first"))
+
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)  ;; toggle back with (
+
 ;; ======================================================
 ;; 5. NAVIGATION, WINDOWS & EDITING
 ;; ======================================================
@@ -184,6 +202,7 @@
 ;; M-a/e: beginning/end of sentence
 ;; M-m: Back to indentation (first char of the line)
 ;; M-</>: beginning/end of buffer
+;; M-/: Auto-complete text
 
 ;; Selection & killing
 ;; C-SPC: set mark (start selection)
@@ -209,7 +228,7 @@
   "Delete window; if only one window, kill buffer instead."
   (interactive)
   (if (one-window-p)
-      (kill-this-buffer)
+      (kill-current-buffer)
     (delete-window)))
 (global-set-key (kbd "M-0") #'my/delete-window-or-kill-buffer)
 
@@ -279,7 +298,13 @@
 
 ;; Orderless: flexible matching (space-separated terms)
 (use-package orderless
-  :config (setq completion-styles '(orderless basic)))
+  :config
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides
+        '((file (styles basic partial-completion))
+          (eglot (styles orderless))
+          (eglot-capf (styles orderless)))))
 
 ;; Consult: enhanced search/navigation
 (use-package consult
@@ -324,16 +349,40 @@
 ;; Corfu: popup completion (like VS Code)
 (use-package corfu
   :init (global-corfu-mode)
+  :bind (:map corfu-map
+              ;; RET should ALWAYS insert a newline, never complete.
+              ("RET" . nil)
+              ("<return>" . nil)
+              ;; TAB is the only accept key.
+              ("TAB" . corfu-insert)
+              ("<tab>" . corfu-insert)
+              ;; Don't steal the arrow keys either — use C-n/C-p to pick.
+              ("<up>" . nil)
+              ("<down>" . nil))
   :config
   (setq corfu-auto t
-        corfu-auto-delay 0.1
-        corfu-auto-prefix 3))
+        corfu-auto-delay 0.2
+        corfu-auto-prefix 3
+        corfu-cycle t
+        corfu-preselect 'prompt      ;; nothing is preselected → TAB is safe too
+        corfu-preview-current nil    ;; no inline ghost text in the buffer
+        corfu-quit-no-match 'separator
+        corfu-quit-at-boundary 'separator
+        corfu-on-exact-match nil))   ;; never auto-insert an exact match
+
+;; Disable auto-popup in case you find it intrusive
+;(add-hook 'text-mode-hook (lambda () (setq-local corfu-auto nil)))
+;(add-hook 'org-mode-hook  (lambda () (setq-local corfu-auto nil)))
 
 ;; Cape: completion sources
 (use-package cape
   :init
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file))
+  ;; Depth 90 = near the end of the list, so eglot/elisp capfs win first.
+  (add-hook 'completion-at-point-functions #'cape-file 10)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev 90))
+;; Only enable dabbrev in text mode
+;(add-hook 'text-mode-hook
+;          (lambda () (add-hook 'completion-at-point-functions #'cape-dabbrev 90 t)))
 
 ;; Pretty icons in completion
 (use-package kind-icon
@@ -353,8 +402,7 @@
          ("C-c C-e" . embark-export))
   :config
   (setq embark-indicators
-        '(embark-which-key-indicator
-          embark-highlight-indicator
+        '(embark-highlight-indicator
           embark-isearch-highlight-indicator)))
 
 (use-package embark-consult
@@ -362,6 +410,14 @@
 
 ;; Edit grep results directly
 (use-package wgrep)
+
+;; Persistent history
+(use-package savehist
+  :ensure nil
+  :init (savehist-mode)
+  :config
+  (setq history-length 200
+        savehist-additional-variables '(search-ring regexp-search-ring kill-ring)))
 
 ;; ======================================================
 ;; 7. LSP, LANGUAGES, & TREESITTER
@@ -371,7 +427,9 @@
 ;; M-x treesit-install-language-grammar RET typescript RET
 (use-package go-mode :mode "\\.go\\'")
 (use-package json-mode :mode "\\.json\\'")
-(use-package typescript-ts-mode :mode ("\\.ts\\'" "\\.tsx\\'"))
+(use-package typescript-ts-mode
+  :ensure nil
+  :mode ("\\.ts\\'" "\\.tsx\\'"))
 
 ;; Formatting Hook
 (defun my-eglot-format-and-organize ()
@@ -381,17 +439,26 @@
     (eglot-code-action-organize-imports)))
 
 (use-package eglot
+  :ensure nil
   :hook ((go-mode . eglot-ensure)
          (json-mode . eglot-ensure)
          (js-mode . eglot-ensure)
+	 (js-ts-mode . eglot-ensure)
+	 (yaml-ts-mode . eglot-ensure)
+	 (html-mode . eglot-ensure)
+	 (css-mode . eglot-ensure)
 	 (c-mode . eglot-ensure)
 	 (python-mode . eglot-ensure)
-	 (c++-mode-hook . eglot-ensure)
-	 (c-or-c++-mode-hook . eglot-ensure)
+	 (c++-mode . eglot-ensure)
+	 (c-or-c++-mode . eglot-ensure)
          (typescript-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure))
   :config
   (setq eglot-autoshutdown t
+	eglot-report-progress t
+	eglot-extend-to-xref t
+	eglot-autoreconnect t
+	eglot-connect-timeout 60
         eglot-sync-connect nil)
   
   ;; Go: enable test tags
@@ -450,20 +517,14 @@
           (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.gohtml\\'" . html-mode))
 
 ;; Indentation Hooks
 ;; Go: tabs, width 4
 (add-hook 'go-mode-hook (lambda () (setq tab-width 4 indent-tabs-mode t)))
 ;; JSON: spaces, width 2
 (add-hook 'json-mode-hook (lambda () (setq tab-width 2 indent-tabs-mode nil js-indent-level 2)))
-
-;; LISP
-(load (expand-file-name "~/.quicklisp/slime-helper.el"))
-;; Replace "sbcl" with the path to your implementation
-(setq inferior-lisp-program "sbcl")
-
 
 ;; ======================================================
 ;; 8. GIT, ORG, COPILOT & MISC TOOLS
@@ -474,6 +535,17 @@
 ;; C-x p g: grep in project
 ;; C-x p p: switch project
 (require 'project)
+
+;; Open dired for the project
+;; C-x p p <project> RET gives Dired, while C-x p p <project> f still goes to find-file.
+(setq project-switch-commands #'project-dired
+      project-switch-use-entire-map t)
+
+;; Treat any dir with these markers as a project root, not just VC roots.
+(setq project-vc-extra-root-markers '("go.mod" "package.json"))
+
+;; C-x p k kills project buffers without asking about each one.
+(setq project-kill-buffers-display-buffer-list t)
 
 ;; Git (Magit)
 (use-package magit
@@ -496,8 +568,28 @@
 (setq org-agenda-files '("~/todo.org")
       org-startup-indented t
       org-hide-leading-stars t
-      org-log-done 'time)  ; Timestamp on TODO completion
+      org-log-done 'time          ;; Timestamp on TODO completion
+      org-log-into-drawer t)      ;; keep CLOSED/state-change notes tidy in the LOGBOOK drawer
+
+;; Interruptions template
+(setq org-capture-templates
+      '(
+	("b" "Backlog item" entry
+         (file+headline "~/todo.org" "BACKLOG")
+         "* TODO %?\n%U")
+	("i" "Interrupt task" entry
+         (file+headline "~/todo.org" "INTERRUPTIONS")
+         "* TODO %?\n%U")
+	("l" "Learning" entry
+	 (file+headline "~/todo.org" "LEARNING")
+	 "* %?\n%U")))
+
+;; Persist the clock across Emacs restarts (survives quitting mid-task)
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+
 (global-set-key (kbd "C-c a") #'org-agenda)
+(global-set-key (kbd "C-c c") #'org-capture)  ;; handy once you start adding tasks quickly
 
 (require 'todo-mode)
 (bind-key "<f12>" 'todo-show)
@@ -517,17 +609,31 @@
 ;;  :config
 ;;  (setq copilot-idle-delay nil)) ; Manual trigger only
 ;;
+
 ;; Markdown
 (use-package markdown-mode
   :hook (markdown-mode . (lambda ()
-                           (setq indent-tabs-mode nil tab-width 2)
-                           (turn-on-gfm-multimarkdown-mode)))
+                           (setq indent-tabs-mode nil tab-width 2)))
+  :mode ("\\.md\\'" . gfm-mode)
+  :config
+  (setq markdown-hide-markup t)
+  ;; Make headers look nicer with varying heights, like org-mode
+  (setq markdown-header-scaling t)
   :bind (:map markdown-mode-map
               ("M-<up>"   . markdown-move-up)
               ("M-<down>" . markdown-move-down)))
 
+;; Fontify code blocks using the actual language's mode (syntax highlighting inside ```lang blocks)
+(setq markdown-fontify-code-blocks-natively t)
+
+;; Align tables nicely as you type (needs the `valign` package for proportional fonts)
+(use-package valign
+  :ensure t
+  :hook (markdown-mode . valign-mode))
+
 ;; Better Ibuffer categories
 (use-package ibuffer
+  :ensure nil
   :bind ("C-x C-b" . ibuffer)
   :config
   (setq ibuffer-saved-filter-groups
@@ -546,36 +652,10 @@
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
 
 ;; Shell in F1
-(global-set-key (kbd "<f1>") #'shell)
+(global-set-key (kbd "<f1>") #'vterm)
 (setq shell-command-prompt-show-cwd t)
 (setq world-clock-list '(("Europe/Stockholm" "Stockholm")))
 
 ;; Mouse definition jump
 (when (display-graphic-p)
   (global-set-key (kbd "s-<mouse-1>") #'xref-find-definitions))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ansible beacon breadcrumb caddyfile-mode cape claude-code-ide
-	     copilot corfu-terminal diff-hl docker docker-compose-mode
-	     doom-themes dracula-theme emacsql embark-consult
-	     everlasting-scratch exec-path-from-shell expand-region
-	     github-browse-file go-scratch graphql-mode iedit
-	     json-mode kind-icon kotlin-mode kotlin-ts-mode
-	     lsp-treemacs magit marginalia minimap multiple-cursors
-	     muse nerd-icons-dired orderless org-journal
-	     persistent-scratch racket-mode reformatter scratch-plus
-	     standard-themes super-save tree-sitter-langs
-	     treemacs-all-the-icons treemacs-icons-dired
-	     treemacs-nerd-icons typescript-mode undo-tree verb
-	     vertico vimrc-mode vimscript-ts-mode vterm wgrep
-	     writegood-mode)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
