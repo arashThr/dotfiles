@@ -83,6 +83,8 @@
           - difftastic
           - aspell-en
           - rclone
+          - python3
+          - sqlite
           # Development
           - "@c-development" # dnf package group
           # Desktop apps

@@ -24,7 +24,7 @@ link_file() {
     ln -s $from $to
 }
 
-for rc_file in vimrc zshrc psqlrc gitconfig gitignore_global tmux.conf; do
+for rc_file in vimrc zshrc psqlrc gitconfig gitignore_global tmux.conf pythonstartup; do
     read -p "Replace $rc_file? " -n 1 -r
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]

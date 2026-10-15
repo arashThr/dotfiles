@@ -199,6 +199,8 @@ export PATH="$GOPATH/bin:$PATH"
 # export GOROOT="$HOME/.local/share/go"
 # export PATH="$GOROOT/bin:$PATH"
 
+export PYTHONSTARTUP="$HOME/.pythonstartup"
+
 # Enable zoxide
 eval "$(zoxide init zsh)"
 
@@ -207,30 +209,8 @@ q() {
 	llm -s "Answer in as few words as possible. Use a brief style with short replies. Put yourself in the position of an experienced software developer." -m 4o-mini $@
 }
 
-# Core function to append a prompt to git diff and pipe to llm
-_gdllm_core() {
-    local prompt="$1"
-    local diff_output=$(git diff origin/main)
-
-    if [ -n "$diff_output" ]; then
-        echo -e "$prompt\n$diff_output" | llm
-    else
-        echo "No changes in git diff."
-    fi
-}
-
-# Function to append a prompt to git diff output and pipe to llm
-gdllm() {
-    local prompt="${1:-Please review the following git diff and suggest improvements:}"
-    _gdllm_core "$prompt"
-}
-
-prllm() {
-	local prompt="${1:-Give a very short pull request description (less than 50 words) for this git diff with sole focus on the code change. I just want to explain the logic change in the code. Avoid general descriptions. Do not try to predict the effect, because you do not have full context on the change. Put yourself in the position of someone who want to know about what is happening with these changes:\n}"
-	_gdllm_core "$prompt"
-}
-
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+fpath=(~/.grok/completions/zsh $fpath)
+autoload -Uz compinit && compinit -C
+# <<< grok installer <<<
