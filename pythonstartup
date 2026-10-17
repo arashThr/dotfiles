@@ -1,0 +1,7 @@
+import sys
+import os
+import json
+from pprint import pprint
+
+# Pretty-print by default when debugging
+p = pprint
