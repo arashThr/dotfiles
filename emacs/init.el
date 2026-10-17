@@ -1,39 +1,45 @@
-;;; init.el --- Emacs Config: Go + Eglot + Modern Completion
+;;; init.el --- Emacs Config: Go + Python + Eglot + Modern Completion -*- lexical-binding: t; -*-
 
 ;; ======================================================
 ;; EXTERNAL DEPENDENCIES (install these first!)
 ;; ======================================================
 ;; go install golang.org/x/tools/gopls@latest
 ;; npm install -g vscode-json-languageserver typescript-language-server
-;; brew install ripgrep (search tool)
+;; brew install ripgrep fd (search tools)
 ;; Install NERD fonts and JetBrains Mono
-;; sudo apt install aspell (spell checking)
 
 ;; ======================================================
 ;; 1. PACKAGE MANAGEMENT & BOOTSTRAP
 ;; ======================================================
 
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;; Only MELPA (not melpa-stable): mixing both causes version conflicts
+;; and was the source of the random load errors.
+(setq package-archives
+      '(("gnu"    . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa"  . "https://melpa.org/packages/"))
+      package-quickstart t                 ;; precompiled autoloads = faster startup
+      package-install-upgrade-built-in t)  ;; allow real `compat' over Emacs' stub
 (package-initialize)
 
 ;; Bootstrap 'use-package'
-(eval-after-load 'gnutls
-  '(add-to-list 'gnutls-trustfiles "/etc/ssl/cert.pem"))
+(with-eval-after-load 'gnutls
+  (add-to-list 'gnutls-trustfiles "/etc/ssl/cert.pem"))
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-(eval-when-compile
-  (require 'use-package))
+(require 'use-package)
 (require 'bind-key)
-(setq use-package-always-ensure t)
+(setq use-package-always-ensure t
+      use-package-always-defer t)  ;; load packages lazily (big startup win)
+
+(use-package compat :demand t)
 
 ;; Set Custom output file to keep this file intact when install packages manually
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
-  (load custom-file))
+  (load custom-file nil t))
 
 ;; ======================================================
 ;; 2. CORE SETTINGS & SANE DEFAULTS
@@ -54,8 +60,10 @@
  use-short-answers t               ;; accept 'y' or 'n' instead of yes/no
  default-directory "~/Documents/workspace/"
  fast-but-imprecise-scrolling t    ;; eke out a little more scrolling performance
+ redisplay-skip-fontification-on-input t ;; snappier typing in big buffers
  load-prefer-newer t               ;; prefer newer elisp files
  confirm-kill-processes nil        ;; when I say to quit, I mean quit
+ read-process-output-max (* 1024 1024) ;; 1MB reads: much faster LSP
  native-comp-async-report-warnings-errors 'silent
  truncate-string-ellipsis "…")     ;; unicode ellipses are better
 
@@ -79,45 +87,47 @@
 
 ;; Auto-save on idle/switch
 (use-package super-save
+  :demand t
   :diminish
   :config
-  (super-save-mode +1)
   (setq super-save-auto-save-when-idle t
         super-save-idle-duration 3
         super-save-remote-files nil
         super-save-exclude '(".gpg"))
   (add-to-list 'super-save-triggers 'consult-buffer)
-  (add-to-list 'super-save-triggers 'magit-status))
+  (add-to-list 'super-save-triggers 'magit-status)
+  (super-save-mode +1))
 
 (use-package persistent-scratch
-  :config
-  (persistent-scratch-setup-default))
+  :hook (after-init . persistent-scratch-setup-default))
 
 ;; ======================================================
 ;; 3. UI & THEMING
 ;; ======================================================
 
-;; Spacegray theme comes from this package
-(use-package doom-themes
-  :config
-  (load-theme 'tango t))
+;; tango is built in, so no theme package is needed.
+;; (For Spacegray etc: (use-package doom-themes :demand t) and load-theme it.)
+(load-theme 'tango t)
 
 ;; Clean UI
 (when (display-graphic-p)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (set-face-attribute 'default nil :height 140)
-  (set-frame-font "-*-Menlo-regular-normal-normal-*-14-*-*-*-m-0-iso10646-1")
+  (set-frame-font "-*-Menlo-regular-normal-normal-*-14-*-*-*-m-0-iso10646-1" nil t)
   (setq-default line-spacing 8)
   (add-to-list 'default-frame-alist '(fullscreen . maximized)))
 
 ;; Mouse support in terminal
 (xterm-mouse-mode 1)
 
-;; Get PATH from shell (macOS fix)
+;; Get PATH from shell (macOS fix). Non-interactive shell = faster.
 (use-package exec-path-from-shell
   :if (display-graphic-p)
+  :demand t
   :config
+  (setq exec-path-from-shell-arguments '("-l")
+        exec-path-from-shell-variables '("PATH" "MANPATH" "GOPATH" "GOBIN"))
   (exec-path-from-shell-initialize))
 
 ;; Smooth scrolling
@@ -131,9 +141,8 @@
   (interactive)
   (scroll-up (/ (window-body-height) 2)))
 
-(with-eval-after-load 'pixel-scroll
   (define-key pixel-scroll-precision-mode-map (kbd "<prior>") 'scroll-half-page-down)
-  (define-key pixel-scroll-precision-mode-map (kbd "<next>") 'scroll-half-page-up))
+  (define-key pixel-scroll-precision-mode-map (kbd "<next>") 'scroll-half-page-up)
 
 ;; ======================================================
 ;; 4. PROJECT TREE (Treemacs)
@@ -151,21 +160,20 @@
   (setq treemacs-position 'left
         treemacs-is-never-other-window t
         treemacs-width 35)
-  
+
   ;; Follow mode is explicitly disabled here.
   ;; When enabled, jumping to Go stdlib/dependencies forces Treemacs out of your project.
   ;; Use 'C-c t f' to manually focus the tree on your current file instead.
   ;; (treemacs-follow-mode nil)
   ;; (treemacs-project-follow-mode nil)
-  
+
   (treemacs-filewatch-mode t) ;; Watch for external file changes
-  (pcase (cons (not (null (executable-find "git")))
-               (not (null (executable-find "python3"))))
-    (`(t . t)
-     (treemacs-git-mode 'deferred))))
+  (when (and (executable-find "git") (executable-find "python3"))
+    (treemacs-git-mode 'deferred)))
 
 (use-package treemacs-nerd-icons
   :after treemacs
+  :demand t
   :config
   (treemacs-load-theme "nerd-icons"))
 
@@ -175,6 +183,7 @@
 ;; dired
 (use-package dired
   :ensure nil
+  :hook (dired-mode . dired-hide-details-mode)   ;; toggle back with (
   :bind (:map dired-mode-map ("C-c C-r" . dired-do-rename))
   :config
   (setq dired-dwim-target t              ;; split window = default copy/move target
@@ -182,8 +191,9 @@
         dired-recursive-deletes 'always
         delete-by-moving-to-trash t      ;; D and x go to trash, not oblivion
         dired-listing-switches "-alh --group-directories-first"))
-
-(add-hook 'dired-mode-hook #'dired-hide-details-mode)  ;; toggle back with (
+;; macOS `ls' lacks --group-directories-first; use GNU ls if available.
+(when (and (eq system-type 'darwin) (executable-find "gls"))
+  (setq insert-directory-program "gls"))
 
 ;; ======================================================
 ;; 5. NAVIGATION, WINDOWS & EDITING
@@ -251,8 +261,10 @@
 ;; Undo/Redo with visualization
 ;; C-/: undo | C-?: redo | C-x u: visualize undo tree
 (use-package undo-tree
-  :init (global-undo-tree-mode)
-  :config (setq undo-tree-auto-save-history nil))
+  :demand t
+  :config
+  (setq undo-tree-auto-save-history nil)
+  (global-undo-tree-mode))
 
 ;; Fast jumping with avy
 (use-package avy
@@ -280,6 +292,7 @@
 
 ;; Show function breadcrumb in header
 (use-package breadcrumb
+  :demand t
   :config (breadcrumb-mode 1))
 
 ;; ======================================================
@@ -288,16 +301,19 @@
 
 ;; Vertico: vertical completion UI
 (use-package vertico
-  :init
+  :demand t
+  :config
   (setq vertico-cycle t)
   (vertico-mode))
 
 ;; Marginalia: show annotations
 (use-package marginalia
+  :demand t
   :config (marginalia-mode))
 
 ;; Orderless: flexible matching (space-separated terms)
 (use-package orderless
+  :demand t
   :config
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
@@ -310,33 +326,36 @@
 (use-package consult
   :bind (;; Buffer/file switching
          ("C-x b" . consult-buffer)
+         ("C-<return>" . consult-buffer)
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x p b" . consult-project-buffer)
-         
+
          ;; Search
          ("M-s l" . consult-line)          ; Search current buffer
          ("M-s L" . consult-line-multi)    ; Search all buffers
          ("M-s p" . consult-fd)            ; Find file by name
          ("M-s g" . consult-grep)          ; Grep in directory
          ("M-s r" . consult-ripgrep)       ; Ripgrep (faster)
-         
+
          ;; Navigation
          ("M-g g" . consult-goto-line)
          ("M-g i" . consult-imenu)         ; Jump to function/class
          ("M-g m" . consult-mark)          ; Jump to mark
-         
+         ("M-g f" . consult-flymake)       ; Jump to diagnostic
+
          ;; Yank history & Registers
          ("M-y" . consult-yank-pop)
          ("<f6>" . consult-register-load)
          ("C-<f6>" . consult-register-store)
          ("M-<f6>" . consult-register)
-         
+
          :map isearch-mode-map
          ("M-s l" . consult-line))
-  :config
+  :init
   (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref
-        consult-narrow-key "<"
+        xref-show-definitions-function #'consult-xref)
+  :config
+  (setq consult-narrow-key "<"
         consult-fd-args '("fd" "--hidden" "--exclude" ".git" "--color=never" "-i" "-t" "f"))
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
@@ -344,11 +363,9 @@
    consult-bookmark consult-recent-file consult-xref
    :preview-key '(:debounce 0.4 any)))
 
-(global-set-key (kbd "C-<return>") #'consult-buffer)
-
 ;; Corfu: popup completion (like VS Code)
 (use-package corfu
-  :init (global-corfu-mode)
+  :demand t
   :bind (:map corfu-map
               ;; RET should ALWAYS insert a newline, never complete.
               ("RET" . nil)
@@ -368,7 +385,10 @@
         corfu-preview-current nil    ;; no inline ghost text in the buffer
         corfu-quit-no-match 'separator
         corfu-quit-at-boundary 'separator
-        corfu-on-exact-match nil))   ;; never auto-insert an exact match
+        corfu-on-exact-match nil     ;; never auto-insert an exact match
+        corfu-popupinfo-delay '(0.5 . 0.2))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode 1))          ;; docs popup next to candidates
 
 ;; Disable auto-popup in case you find it intrusive
 ;(add-hook 'text-mode-hook (lambda () (setq-local corfu-auto nil)))
@@ -376,24 +396,25 @@
 
 ;; Cape: completion sources
 (use-package cape
+  :demand t
   :init
   ;; Depth 90 = near the end of the list, so eglot/elisp capfs win first.
   (add-hook 'completion-at-point-functions #'cape-file 10)
   (add-hook 'completion-at-point-functions #'cape-dabbrev 90))
-;; Only enable dabbrev in text mode
-;(add-hook 'text-mode-hook
-;          (lambda () (add-hook 'completion-at-point-functions #'cape-dabbrev 90 t)))
 
 ;; Pretty icons in completion
 (use-package kind-icon
   :if (display-graphic-p)
   :after corfu
+  :demand t
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 ;; Show keybinding help
 (use-package which-key
-  :init (which-key-mode)
-  :config (setq which-key-idle-delay 0.5))
+  :demand t
+  :config
+  (setq which-key-idle-delay 0.5)
+  (which-key-mode))
 
 ;; Embark: context actions (like right-click menu)
 (use-package embark
@@ -406,6 +427,8 @@
           embark-isearch-highlight-indicator)))
 
 (use-package embark-consult
+  :after (embark consult)
+  :demand t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; Edit grep results directly
@@ -414,10 +437,11 @@
 ;; Persistent history
 (use-package savehist
   :ensure nil
-  :init (savehist-mode)
+  :demand t
   :config
   (setq history-length 200
-        savehist-additional-variables '(search-ring regexp-search-ring kill-ring)))
+        savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
+  (savehist-mode))
 
 ;; ======================================================
 ;; 7. LSP, LANGUAGES, & TREESITTER
@@ -425,77 +449,15 @@
 
 ;; For new languages, you need to manually install the Tree-sitter grammar
 ;; M-x treesit-install-language-grammar RET typescript RET
+;; (or M-x my/treesit-install-all to install every missing one)
 (use-package go-mode :mode "\\.go\\'")
 (use-package json-mode :mode "\\.json\\'")
-(use-package typescript-ts-mode
-  :ensure nil
-  :mode ("\\.ts\\'" "\\.tsx\\'"))
-
-;; Formatting Hook
-(defun my-eglot-format-and-organize ()
-  "Format buffer on save."
-  (when (eglot-managed-p)
-    (eglot-format-buffer)
-    (eglot-code-action-organize-imports)))
-
-(use-package eglot
-  :ensure nil
-  :hook ((go-mode . eglot-ensure)
-         (json-mode . eglot-ensure)
-         (js-mode . eglot-ensure)
-	 (js-ts-mode . eglot-ensure)
-	 (yaml-ts-mode . eglot-ensure)
-	 (html-mode . eglot-ensure)
-	 (css-mode . eglot-ensure)
-	 (c-mode . eglot-ensure)
-	 (python-mode . eglot-ensure)
-	 (c++-mode . eglot-ensure)
-	 (c-or-c++-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure)
-         (tsx-ts-mode . eglot-ensure))
-  :config
-  (setq eglot-autoshutdown t
-	eglot-report-progress t
-	eglot-extend-to-xref t
-	eglot-autoreconnect t
-	eglot-connect-timeout 60
-        eglot-sync-connect nil)
-  
-  ;; Go: enable test tags
-  (setq eglot-workspace-configuration '(:gopls (:buildFlags ["-tags=integration_test,unit_test"])))
-  (add-hook 'go-mode-hook
-            (lambda () (add-hook 'before-save-hook 'my-eglot-format-and-organize nil t))))
-
-;; Eglot keybindings
-;; M-.: go to definition | M-,: go back
-(with-eval-after-load 'eglot
-  (define-key eglot-mode-map (kbd "M-'") #'eglot-find-implementation)
-  (define-key eglot-mode-map (kbd "C-c l i") #'eglot-find-implementation)
-  (define-key eglot-mode-map (kbd "C-c l t") #'eglot-find-typeDefinition)
-  (define-key eglot-mode-map (kbd "C-c l a") #'eglot-code-actions)
-  (define-key eglot-mode-map (kbd "C-c l r") #'eglot-rename)
-  (define-key eglot-mode-map (kbd "C-c l f") #'eglot-format-buffer)
-  (define-key eglot-mode-map (kbd "C-c l d") #'eldoc-doc-buffer)
-  (define-key eglot-mode-map (kbd "C-c l o") #'eglot-code-action-organize-imports))
-
-;; Diagnostics & Spell Check
-(defun my/flymake-toggle-diagnostics ()
-  (interactive)
-  (let ((diag-buffer (get-buffer "*Flymake diagnostics*")))
-    (if (and diag-buffer (get-buffer-window diag-buffer))
-        (delete-windows-on diag-buffer)
-      (flymake-show-buffer-diagnostics))))
-
-(with-eval-after-load 'flymake
-  (define-key flymake-mode-map (kbd "M-n") #'flymake-goto-next-error)
-  (define-key flymake-mode-map (kbd "M-p") #'flymake-goto-prev-error))
-
-(global-set-key (kbd "<f8>") #'my/flymake-toggle-diagnostics)
-(global-set-key (kbd "<S-f8>") #'flymake-show-project-diagnostics)
-
-(add-hook 'prog-mode-hook #'flyspell-prog-mode)  ; Comments/strings only
-(add-hook 'text-mode-hook #'flyspell-mode)
-(add-hook 'org-mode-hook #'flyspell-mode)
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.gohtml\\'" . html-mode))
 
 ;; Tree-sitter Setup (Emacs 29+)
 (when (treesit-available-p)
@@ -516,15 +478,132 @@
           (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
           (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
-(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.gohtml\\'" . html-mode))
+(defun my/treesit-install-all ()
+  "Install every missing grammar in `treesit-language-source-alist'."
+  (interactive)
+  (dolist (lang (mapcar #'car treesit-language-source-alist))
+    (unless (treesit-language-available-p lang)
+      (treesit-install-language-grammar lang))))
 
-;; Indentation Hooks
+;; Formatting Hook (organize-imports wrapped: some servers lack it)
+(defun my-eglot-format-and-organize ()
+  "Format buffer on save."
+  (when (eglot-managed-p)
+    (eglot-format-buffer)
+    (ignore-errors (eglot-code-action-organize-imports (point-min) (point-max)))))
+
+(use-package eglot
+  :ensure nil
+  :hook ((go-mode . eglot-ensure)
+         (json-mode . eglot-ensure)
+         (js-mode . eglot-ensure)
+         (js-ts-mode . eglot-ensure)
+         (yaml-ts-mode . eglot-ensure)
+         (html-mode . eglot-ensure)
+         (css-mode . eglot-ensure)
+         (c-mode . eglot-ensure)
+         (python-ts-mode . eglot-ensure)
+         (c++-mode . eglot-ensure)
+         (c-or-c++-mode . eglot-ensure)
+         (typescript-ts-mode . eglot-ensure)
+         (tsx-ts-mode . eglot-ensure))
+  :config
+  (setq eglot-autoshutdown t
+        eglot-report-progress t
+        eglot-extend-to-xref t
+        eglot-autoreconnect t
+        eglot-connect-timeout 60
+        eglot-sync-connect nil
+        eglot-events-buffer-config '(:size 0 :format full)) ;; no event log = faster
+  ;; Go: enable test tags
+  (setq-default eglot-workspace-configuration
+                '(:gopls (:buildFlags ["-tags=integration_test,unit_test"])))
+  ;; Python: basedpyright
+  (add-to-list 'eglot-server-programs
+               '((python-ts-mode python-mode) . ("basedpyright-langserver" "--stdio"))))
+
+(add-hook 'go-mode-hook
+          (lambda () (add-hook 'before-save-hook #'my-eglot-format-and-organize nil t)))
+
+;; Eglot keybindings
+;; M-.: go to definition | M-,: go back
+(with-eval-after-load 'eglot
+  (define-key eglot-mode-map (kbd "M-'") #'eglot-find-implementation)
+  (define-key eglot-mode-map (kbd "C-c l i") #'eglot-find-implementation)
+  (define-key eglot-mode-map (kbd "C-c l t") #'eglot-find-typeDefinition)
+  (define-key eglot-mode-map (kbd "C-c l a") #'eglot-code-actions)
+  (define-key eglot-mode-map (kbd "C-c l r") #'eglot-rename)
+  (define-key eglot-mode-map (kbd "C-c l f") #'eglot-format-buffer)
+  (define-key eglot-mode-map (kbd "C-c l d") #'eldoc-doc-buffer)
+  (define-key eglot-mode-map (kbd "C-c l o") #'eglot-code-action-organize-imports))
+
 ;; Go: tabs, width 4
 (add-hook 'go-mode-hook (lambda () (setq tab-width 4 indent-tabs-mode t)))
 ;; JSON: spaces, width 2
 (add-hook 'json-mode-hook (lambda () (setq tab-width 2 indent-tabs-mode nil js-indent-level 2)))
+
+;; --- PYTHON ---
+;; Format on save with ruff (isort + format)
+(use-package apheleia
+  :hook (python-ts-mode . apheleia-mode)
+  :config
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)))
+
+;; Per-project env via .envrc (uses the project's .venv for LSP/REPL/compile)
+(use-package envrc
+  :hook (after-init . envrc-global-mode))
+
+(defun my/python-run-file ()
+  "Run current file with `uv run' (interactive, so input() works)."
+  (interactive)
+  (save-buffer)
+  (compile (concat "uv run " (shell-quote-argument buffer-file-name)) t))
+
+(defun my/python-test ()
+  "Run pytest from the project root."
+  (interactive)
+  (let ((default-directory (project-root (project-current t))))
+    (compile "uv run pytest -q" t)))
+
+(defun my/python-scratch ()
+  "Open a new throwaway script in ~/Documents/workspace/scratch/."
+  (interactive)
+  (let ((dir (expand-file-name "~/Documents/workspace/scratch/")))
+    (make-directory dir t)
+    (find-file (expand-file-name (format-time-string "%Y%m%d-%H%M%S.py") dir))
+    (when (= (buffer-size) 0)
+      (insert "# /// script\n# requires-python = \">=3.12\"\n# dependencies = []\n# ///\n\n"))))
+(global-set-key (kbd "C-c n p") #'my/python-scratch)
+
+(with-eval-after-load 'python
+  (define-key python-ts-mode-map (kbd "C-c C-k") #'my/python-run-file)
+  (define-key python-ts-mode-map (kbd "C-c C-t") #'my/python-test)
+  (setq python-shell-interpreter "python3"
+        python-indent-guess-indent-offset-verbose nil))
+
+;; Diagnostics & Spell Check
+(defun my/flymake-toggle-diagnostics ()
+  (interactive)
+  (let ((diag-buffer (get-buffer (format "*Flymake diagnostics for `%s'*" (buffer-name)))))
+    (if (and diag-buffer (get-buffer-window diag-buffer))
+        (delete-windows-on diag-buffer)
+      (flymake-show-buffer-diagnostics))))
+
+(with-eval-after-load 'flymake
+  (define-key flymake-mode-map (kbd "M-n") #'flymake-goto-next-error)
+  (define-key flymake-mode-map (kbd "M-p") #'flymake-goto-prev-error))
+
+(global-set-key (kbd "<f8>") #'my/flymake-toggle-diagnostics)
+(global-set-key (kbd "<S-f8>") #'flymake-show-project-diagnostics)
+
+;; Spell check: jinx (fast, async) if enchant is installed, else flyspell.
+(if (executable-find "enchant-2")
+    (use-package jinx
+      :hook ((text-mode prog-mode conf-mode) . jinx-mode)
+      :bind (("M-$" . jinx-correct)
+             ("C-M-$" . jinx-languages)))
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)  ; Comments/strings only
+  (add-hook 'text-mode-hook #'flyspell-mode))
 
 ;; ======================================================
 ;; 8. GIT, ORG, COPILOT & MISC TOOLS
@@ -534,35 +613,51 @@
 ;; C-x p f: find file in project
 ;; C-x p g: grep in project
 ;; C-x p p: switch project
-(require 'project)
-
-;; Open dired for the project
-;; C-x p p <project> RET gives Dired, while C-x p p <project> f still goes to find-file.
-(setq project-switch-commands #'project-dired
-      project-switch-use-entire-map t)
-
-;; Treat any dir with these markers as a project root, not just VC roots.
-(setq project-vc-extra-root-markers '("go.mod" "package.json"))
-
-;; C-x p k kills project buffers without asking about each one.
-(setq project-kill-buffers-display-buffer-list t)
+(with-eval-after-load 'project
+  ;; C-x p p <project> RET gives Dired, C-x p p <project> f still goes to find-file.
+  (setq project-switch-commands #'project-dired
+        project-switch-use-entire-map t
+        ;; Treat any dir with these markers as a project root, not just VC roots.
+        project-vc-extra-root-markers '("go.mod" "package.json" "pyproject.toml")
+        ;; C-x p k kills project buffers without asking about each one.
+        project-kill-buffers-display-buffer-list t))
 
 ;; Git (Magit)
 (use-package magit
-  :bind ("C-x g" . magit-status))
-(add-hook 'magit-process-mode-hook 'goto-address-mode) ;; Clickable links in magit
+  :bind (("C-x g" . magit-status)
+         ("C-c g b" . magit-blame-addition)
+         ("C-c g l" . magit-log-buffer-file))
+  :hook (magit-process-mode . goto-address-mode) ;; Clickable links in magit
+  :config
+  (setq magit-bury-buffer-function #'magit-restore-window-configuration
+        magit-diff-refine-hunk t            ;; word-level diff highlighting
+        magit-save-repository-buffers 'dontask
+        magit-ediff-dwim-show-on-hunks t))
 
 ;; Show git changes in fringe
 (use-package diff-hl
-  :config
-  (global-diff-hl-mode 1)
-  :hook ((magit-pre-refresh . diff-hl-magit-pre-refresh)
-         (magit-post-refresh . diff-hl-magit-post-refresh)))
+  :hook ((prog-mode . diff-hl-mode)
+         (text-mode . diff-hl-mode)
+         (conf-mode . diff-hl-mode)
+         (dired-mode . diff-hl-dired-mode)
+         (magit-pre-refresh . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh))
+  :config (diff-hl-flydiff-mode 1))   ;; update without saving
 
-;; Ediff settings
+;; Ediff settings: side by side, single frame, restore layout after quitting
 (setq ediff-split-window-function 'split-window-horizontally
-      ediff-window-setup-function 'ediff-setup-windows-plain
-      magit-ediff-dwim-show-on-hunks t)
+      ediff-window-setup-function 'ediff-setup-windows-plain)
+(add-hook 'ediff-after-quit-hook-internal #'winner-undo)
+
+;; Text comparison
+(defun my/diff-buffers (a b)
+  "Ediff two buffers."
+  (interactive (list (read-buffer "Buffer A: " (current-buffer))
+                     (read-buffer "Buffer B: " (other-buffer))))
+  (ediff-buffers a b))
+(global-set-key (kbd "C-c d b") #'my/diff-buffers)
+(global-set-key (kbd "C-c d f") #'ediff-files)
+(global-set-key (kbd "C-c d r") #'ediff-regions-wordwise)
 
 ;; Org Mode
 (setq org-agenda-files '("~/todo.org")
@@ -573,26 +668,26 @@
 
 ;; Interruptions template
 (setq org-capture-templates
-      '(
-	("b" "Backlog item" entry
+      '(("b" "Backlog item" entry
          (file+headline "~/todo.org" "BACKLOG")
          "* TODO %?\n%U")
-	("i" "Interrupt task" entry
+        ("i" "Interrupt task" entry
          (file+headline "~/todo.org" "INTERRUPTIONS")
          "* TODO %?\n%U")
-	("l" "Learning" entry
-	 (file+headline "~/todo.org" "LEARNING")
-	 "* %?\n%U")))
+        ("l" "Learning" entry
+         (file+headline "~/todo.org" "LEARNING")
+         "* %?\n%U")))
 
 ;; Persist the clock across Emacs restarts (survives quitting mid-task)
 (setq org-clock-persist 'history)
-(org-clock-persistence-insinuate)
+(with-eval-after-load 'org
+  (org-clock-persistence-insinuate))
 
 (global-set-key (kbd "C-c a") #'org-agenda)
-(global-set-key (kbd "C-c c") #'org-capture)  ;; handy once you start adding tasks quickly
+(global-set-key (kbd "C-c c") #'org-capture)
 
-(require 'todo-mode)
-(bind-key "<f12>" 'todo-show)
+;; todo-mode is built in; F12 autoloads it (no `require' at startup)
+(global-set-key (kbd "<f12>") #'todo-show)
 
 ;; Copilot
 ;;(use-package copilot
@@ -608,51 +703,53 @@
 ;;              ("TAB" . copilot-accept-completion))
 ;;  :config
 ;;  (setq copilot-idle-delay nil)) ; Manual trigger only
-;;
 
 ;; Markdown
 (use-package markdown-mode
-  :hook (markdown-mode . (lambda ()
-                           (setq indent-tabs-mode nil tab-width 2)))
   :mode ("\\.md\\'" . gfm-mode)
-  :config
-  (setq markdown-hide-markup t)
-  ;; Make headers look nicer with varying heights, like org-mode
-  (setq markdown-header-scaling t)
+  :hook (markdown-mode . (lambda () (setq indent-tabs-mode nil tab-width 2)))
   :bind (:map markdown-mode-map
               ("M-<up>"   . markdown-move-up)
-              ("M-<down>" . markdown-move-down)))
+              ("M-<down>" . markdown-move-down))
+  :config
+  (setq markdown-hide-markup t
+        markdown-header-scaling t                ;; headers with varying heights, like org
+        markdown-fontify-code-blocks-natively t)) ;; syntax highlighting inside ```lang blocks
 
-;; Fontify code blocks using the actual language's mode (syntax highlighting inside ```lang blocks)
-(setq markdown-fontify-code-blocks-natively t)
-
-;; Align tables nicely as you type (needs the `valign` package for proportional fonts)
+;; Align tables nicely as you type
 (use-package valign
-  :ensure t
   :hook (markdown-mode . valign-mode))
 
 ;; Better Ibuffer categories
 (use-package ibuffer
   :ensure nil
   :bind ("C-x C-b" . ibuffer)
+  :hook (ibuffer-mode . (lambda () (ibuffer-switch-to-saved-filter-groups "default")))
   :config
   (setq ibuffer-saved-filter-groups
         '(("default"
-           ("SSH" (filename . "/ssh:"))
-           ("TRAMP" (filename . "/sudo:\\|/ssh:"))
+           ("TRAMP" (filename . "^/\\(ssh\\|sudo\\):"))
            ("Org" (mode . org-mode))
-           ("Programming" (or (mode . python-mode) (mode . go-mode) (mode . emacs-lisp-mode)))
+           ("Programming" (derived-mode . prog-mode))
+           ("Magit" (name . "^magit"))
            ("Dired" (mode . dired-mode))
            ("Emacs" (or (name . "^\\*scratch\\*$") (name . "^\\*Messages\\*$")))))))
-(add-hook 'ibuffer-mode-hook (lambda () (ibuffer-switch-to-saved-filter-groups "default")))
 
 ;; Utilities
-(use-package verb)
-(with-eval-after-load 'org
-  (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+;; verb: bind its map only once both org and verb are loaded (fixes init error)
+(use-package verb
+  :after org
+  :demand t
+  :config (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
 
-;; Shell in F1
-(global-set-key (kbd "<f1>") #'vterm)
+;; Shell in F1: vterm if installed, otherwise built-in eshell (no void-function error)
+(use-package vterm
+  :if (and module-file-suffix (executable-find "cmake"))
+  :commands vterm)
+(global-set-key (kbd "<f1>")
+                (lambda () (interactive)
+                  (if (fboundp 'vterm) (vterm) (eshell))))
+
 (setq shell-command-prompt-show-cwd t)
 (setq world-clock-list '(("Europe/Stockholm" "Stockholm")))
 
