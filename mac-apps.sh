@@ -12,4 +12,9 @@ brew install --cask ghostty
 mkdir -p $HOME/.config/ghostty/config
 link_file `pwd`/ghostty $HOME/.config/ghostty/config
 
+# cask installations
+brew install --cask fluidvoice emacs
+
+# libpq
+brew install libpq
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
