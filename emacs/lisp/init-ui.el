@@ -6,7 +6,9 @@
 
 ;; tango is built in, so no theme package is needed.
 ;; (For Spacegray etc: (use-package doom-themes :demand t) and load-theme it.)
-(load-theme 'tango t)
+(use-package doom-themes
+  :config
+  (load-theme 'tango t))
 
 ;; Clean UI
 (when (display-graphic-p)
