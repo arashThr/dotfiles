@@ -4,7 +4,8 @@
 
 | File | Purpose |
 |---|---|
-| `init.el` | Full workstation config — primary file to edit |
+| `init.el` | Entry point: bootstrap header + `require`s each module in `lisp/` |
+| `lisp/init-*.el` | Full workstation config, split by topic (see below) — primary files to edit |
 | `server.el` | Lightweight config for SSH/headless servers |
 | `mini-emacs.el` | Truly minimal config (based on [Emfy](https://github.com/susam/emfy)) |
 
@@ -59,10 +60,26 @@ Use `use-package` with appropriate keywords. Example pattern:
   (setq some-pkg-option t))
 ```
 
-Place new package blocks under the relevant section header in `init.el`.
+Place new package blocks in the matching `lisp/init-*.el` module:
+
+| Module | Contents |
+|---|---|
+| `init-packages` | Archives, use-package bootstrap, custom-file |
+| `init-core` | Sane defaults, backups, super-save |
+| `init-ui` | Theme, fonts, frame, scrolling |
+| `init-filetree` | Treemacs, nerd-icons, Dired |
+| `init-editing` | Windows, buffers, avy, multiple-cursors, undo-tree |
+| `init-completion` | Vertico, Consult, Corfu, Cape, Embark |
+| `init-lang` | Major modes, Tree-sitter, Eglot, Flymake, spell check |
+| `init-python` | apheleia/ruff, envrc, uv run/test helpers |
+| `init-git` | project.el, Magit, diff-hl, Ediff |
+| `init-org` | Org, capture, agenda, verb |
+| `init-tools` | Markdown, Ibuffer, vterm, misc |
+
+A new module must end with `(provide 'init-foo)` and be `require`d from `init.el` (order matters: `init-packages` first).
 
 ## What Goes Where
 
-- **`init.el`**: All GUI-capable, full-featured config changes
+- **`lisp/init-*.el`**: All GUI-capable, full-featured config changes
 - **`server.el`**: Changes needed on headless servers (keep minimal; avoid GUI-only packages)
 - **`mini-emacs.el`**: Do not extend — it's intentionally minimal/reference

@@ -108,11 +108,10 @@
   (add-hook 'completion-at-point-functions #'cape-dabbrev 90))
 
 ;; Pretty icons in completion
-(use-package kind-icon
-  :if (display-graphic-p)
+(use-package nerd-icons-corfu
   :after corfu
   :demand t
-  :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+  :config (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 ;; Show keybinding help
 (use-package which-key

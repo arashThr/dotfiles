@@ -14,6 +14,7 @@ link_file `pwd`/ghostty $HOME/.config/ghostty/config
 
 # cask installations
 brew install --cask fluidvoice emacs
+brew install --cask font-jetbrains-mono font-symbols-only-nerd-font  # Emacs font + icons
 
 # libpq
 brew install libpq
