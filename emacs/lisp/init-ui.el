@@ -69,8 +69,7 @@
   :if (display-graphic-p)
   :demand t
   :config
-  (setq exec-path-from-shell-arguments '("-l")
-        exec-path-from-shell-variables '("PATH" "MANPATH" "GOPATH" "GOBIN"))
+  (setq exec-path-from-shell-arguments '("-l" "-i"))
   (exec-path-from-shell-initialize))
 
 ;; Smooth scrolling (trackpad momentum, no jumpy recentering)
