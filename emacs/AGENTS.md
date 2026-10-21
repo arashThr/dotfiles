@@ -27,7 +27,7 @@ MELPA + MELPA Stable. VC-installed packages (not on MELPA) use `:vc (:url "..." 
 - **Git:** Magit + diff-hl
 - **Theme:** `doom-themes` (`doom-material`)
 - **Navigation:** avy, expand-region, multiple-cursors, iedit
-- **AI:** `agent-shell` (chat with Claude, GitHub Copilot or Grok over ACP, `C-c i` prefix) — do **not** re-add `copilot.el`
+- **AI:** `agent-shell` (chat with Claude, GitHub Copilot or Grok over ACP, `C-c a` prefix) — do **not** re-add `copilot.el`
 
 ## Indentation Rules
 

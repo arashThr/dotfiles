@@ -20,10 +20,13 @@
   ((claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp")
    (copilot . "npm install -g @github/copilot")
    (grok . "curl -fsSL https://x.ai/cli/install.sh | bash"))
-  :bind (("C-c i i" . agent-shell)            ;; open/switch to the project's chat
-         ("C-c i n" . agent-shell-new-shell)  ;; start another chat
-         ("C-c i t" . agent-shell-toggle)     ;; show/hide the chat window
-         ("C-c i s" . agent-shell-send-dwim)) ;; send region (or error at point)
+  :bind (("C-c a a" . agent-shell)                    ;; open/switch to the project's chat
+         ("C-c a n" . agent-shell-new-shell)          ;; start another chat
+         ("C-c a t" . agent-shell-toggle)             ;; show/hide the chat window
+         ("C-c a s" . agent-shell-send-dwim)          ;; send region (or error at point)
+         ("C-c a f" . agent-shell-send-file)          ;; add a file as context
+         ("C-c a c" . agent-shell-prompt-compose)     ;; write a long prompt in its own buffer
+         ("C-c a w" . agent-shell-new-worktree-shell)) ;; isolated chat in a new git worktree
   :config
   ;; Only offer the three agents we use; Claude is preselected in the picker.
   (setq agent-shell-agent-configs
