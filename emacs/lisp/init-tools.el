@@ -1,23 +1,8 @@
-;;; init-tools.el --- Copilot, Markdown, Ibuffer, shell and misc utilities -*- lexical-binding: t; -*-
+;;; init-tools.el --- Markdown, Ibuffer, shell and misc utilities -*- lexical-binding: t; -*-
 
 ;; ======================================================
 ;; MISC TOOLS
 ;; ======================================================
-
-;; Copilot
-;;(use-package copilot
-;;  :vc (:url "https://github.com/copilot-emacs/copilot.el" :branch "main")
-;;  :ensure t
-;;  :hook (prog-mode . copilot-mode)
-;;  :bind (:map copilot-mode-map
-;;              ("C-c c \\" . copilot-complete)
-;;              ("C-c c n" . copilot-next-completion)
-;;              ("C-c c p" . copilot-previous-completion)
-;;              ("C-g" . copilot-clear-overlay)
-;;              ("<tab>" . copilot-accept-completion)
-;;              ("TAB" . copilot-accept-completion))
-;;  :config
-;;  (setq copilot-idle-delay nil)) ; Manual trigger only
 
 ;; Markdown
 (use-package markdown-mode

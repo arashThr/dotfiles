@@ -28,5 +28,6 @@
 (require 'init-git)
 (require 'init-org)
 (require 'init-tools)
+(require 'init-ai)
 
 ;;; init.el ends here

@@ -27,7 +27,7 @@ MELPA + MELPA Stable. VC-installed packages (not on MELPA) use `:vc (:url "..." 
 - **Git:** Magit + diff-hl
 - **Theme:** `doom-themes` (`doom-material`)
 - **Navigation:** avy, expand-region, multiple-cursors, iedit
-- **AI:** `copilot.el` (GitHub Copilot, manual trigger via `C-c c \`) + `claude-code-ide`
+- **AI:** `agent-shell` (chat with Claude, GitHub Copilot or Grok over ACP, `C-c i` prefix) — do **not** re-add `copilot.el`
 
 ## Indentation Rules
 
@@ -80,6 +80,7 @@ Place new package blocks in the matching `lisp/init-*.el` module:
 | `init-git` | project.el, Magit, diff-hl, Ediff |
 | `init-org` | Org, capture, agenda, verb |
 | `init-tools` | Markdown, Ibuffer, vterm, misc |
+| `init-ai` | agent-shell (Claude, Copilot, Grok) |
 
 A new module must end with `(provide 'init-foo)` and be `require`d from `init.el` (order matters: `init-packages` first).
 
