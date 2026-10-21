@@ -13,7 +13,7 @@
               ("M-<down>" . markdown-move-down))
   :config
   (setq markdown-hide-markup t
-        markdown-header-scaling t                ;; headers with varying heights, like org
+        markdown-header-scaling t                ;; headers with varying heights
         markdown-fontify-code-blocks-natively t)) ;; syntax highlighting inside ```lang blocks
 
 ;; Align tables nicely as you type
@@ -29,7 +29,6 @@
   (setq ibuffer-saved-filter-groups
         '(("default"
            ("TRAMP" (filename . "^/\\(ssh\\|sudo\\):"))
-           ("Org" (mode . org-mode))
            ("Programming" (derived-mode . prog-mode))
            ("Magit" (name . "^magit"))
            ("Dired" (mode . dired-mode))
@@ -42,6 +41,9 @@
 (global-set-key (kbd "<f1>")
                 (lambda () (interactive)
                   (if (fboundp 'vterm) (vterm) (eshell))))
+
+;; todo-mode is built in; F12 autoloads it (no `require' at startup)
+(global-set-key (kbd "<f12>") #'todo-show)
 
 (setq shell-command-prompt-show-cwd t)
 (setq world-clock-list '(("Europe/Stockholm" "Stockholm")))

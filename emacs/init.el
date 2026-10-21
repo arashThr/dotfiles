@@ -26,7 +26,6 @@
 (require 'init-lang)
 (require 'init-python)
 (require 'init-git)
-(require 'init-org)
 (require 'init-tools)
 (require 'init-ai)
 

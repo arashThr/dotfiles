@@ -100,7 +100,6 @@
 
 ;; Disable auto-popup in case you find it intrusive
 ;(add-hook 'text-mode-hook (lambda () (setq-local corfu-auto nil)))
-;(add-hook 'org-mode-hook  (lambda () (setq-local corfu-auto nil)))
 
 ;; Cape: completion sources
 (use-package cape

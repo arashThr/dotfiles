@@ -78,7 +78,6 @@ Place new package blocks in the matching `lisp/init-*.el` module:
 | `init-lang` | Major modes, Tree-sitter, Eglot, Flymake, spell check |
 | `init-python` | apheleia/ruff, envrc, uv run/test helpers |
 | `init-git` | project.el, Magit, diff-hl, Ediff |
-| `init-org` | Org, capture, agenda, verb |
 | `init-tools` | Markdown, Ibuffer, vterm, misc |
 | `init-ai` | agent-shell (Claude, Copilot, Grok) |
 
