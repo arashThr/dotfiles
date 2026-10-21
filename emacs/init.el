@@ -1,12 +1,12 @@
 ;;; init.el --- Emacs Config: Go + Python + Eglot + Modern Completion -*- lexical-binding: t; -*-
 
 ;; ======================================================
-;; EXTERNAL DEPENDENCIES (install these first!)
+;; EXTERNAL DEPENDENCIES
 ;; ======================================================
-;; go install golang.org/x/tools/gopls@latest
-;; npm install -g vscode-json-languageserver typescript-language-server
-;; brew install ripgrep fd (search tools)
-;; Install NERD fonts and JetBrains Mono
+;; CLI tools (rg, fd, gopls, ruff, uv, ...) are declared per package with
+;; `:ensure-system-package' and installed on first use. Prerequisites:
+;; brew (macOS) or dnf (Fedora), plus go and npm for the language servers.
+;; Fonts: brew install --cask font-jetbrains-mono font-symbols-only-nerd-font
 
 ;; ======================================================
 ;; LOAD MODULES (emacs/lisp/init-*.el)

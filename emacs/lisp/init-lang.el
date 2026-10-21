@@ -51,6 +51,12 @@
 
 (use-package eglot
   :ensure nil
+  ;; Language servers (basedpyright needs uv, see init-python)
+  :ensure-system-package
+  ((gopls . "go install golang.org/x/tools/gopls@latest")
+   (typescript-language-server . "npm install -g typescript-language-server typescript")
+   (vscode-json-languageserver . "npm install -g vscode-json-languageserver")
+   (basedpyright-langserver . "uv tool install basedpyright"))
   :hook ((go-mode . eglot-ensure)
          (json-mode . eglot-ensure)
          (js-mode . eglot-ensure)

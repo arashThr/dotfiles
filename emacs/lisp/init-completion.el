@@ -29,6 +29,9 @@
 
 ;; Consult: enhanced search/navigation
 (use-package consult
+  ;; fd is packaged as fd-find on Fedora
+  :ensure-system-package ((rg . ripgrep)
+                          (fd . "brew install fd || sudo dnf install -y fd-find"))
   :bind (;; Buffer/file switching
          ("C-x b" . consult-buffer)
          ("C-<return>" . consult-buffer)

@@ -6,12 +6,14 @@
 
 ;; Format on save with ruff (isort + format)
 (use-package apheleia
+  :ensure-system-package (ruff uv)  ;; uv also backs the run/test helpers below
   :hook (python-ts-mode . apheleia-mode)
   :config
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)))
 
 ;; Per-project env via .envrc (uses the project's .venv for LSP/REPL/compile)
 (use-package envrc
+  :ensure-system-package direnv
   :hook (after-init . envrc-global-mode))
 
 (defun my/python-run-file ()

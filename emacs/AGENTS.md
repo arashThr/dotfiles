@@ -39,14 +39,19 @@ MELPA + MELPA Stable. VC-installed packages (not on MELPA) use `:vc (:url "..." 
 
 ## External Dependencies
 
-These must be installed separately before the config works fully:
+CLI tools are declared on the package that needs them with `:ensure-system-package`
+(provided by the `system-packages` package, set up in `init-packages.el`). A missing
+binary is installed via brew/dnf, or a custom command, the first time that package loads:
 
-```sh
-go install golang.org/x/tools/gopls@latest
-npm install -g vscode-json-languageserver typescript-language-server
-brew install ripgrep aspell
-# Fonts: JetBrains Mono (or IBM Plex Mono), any Nerd Font
+```elisp
+(use-package consult
+  :ensure-system-package ((rg . ripgrep)              ; binary . package name
+                          (fd . "brew install fd")))  ; binary . shell command
 ```
+
+Use the `(binary . "command")` form when the package name differs between brew and dnf,
+or for `go install` / `npm install -g` / `uv tool install`. Prerequisites: brew or dnf,
+`go`, `npm`. Fonts: `brew install --cask font-jetbrains-mono font-symbols-only-nerd-font`.
 
 ## Adding New Packages
 

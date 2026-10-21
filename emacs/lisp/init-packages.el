@@ -28,6 +28,14 @@
 
 (use-package compat :demand t)
 
+;; `:ensure-system-package' installs a package's external tools (via brew on
+;; macOS, dnf on Fedora) the first time that package loads, if they're missing.
+(use-package system-packages
+  :demand t
+  :config (setq system-packages-noconfirm t))
+(require 'use-package-ensure-system-package)
+(setq async-shell-command-buffer 'new-buffer)  ;; parallel installs, no prompt
+
 ;; Set Custom output file to keep this file intact when install packages manually
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
